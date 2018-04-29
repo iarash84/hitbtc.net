@@ -1,6 +1,6 @@
 # hitbtc
-HitBTC Websocket API 2.0 Client written in C#.
-A full-featured .NET **[Hitbtc API](https://api.hitbtc.com)** designed for ease of use.
+HitBTC Websocket API 2.0 Client written in C#.\
+A full-featured .NET **[Hitbtc API](https://api.hitbtc.com)** designed for ease of use.\
 Compatible with **.NET Standard 2.0** and **.NET Framework 4.7.1**
 
 

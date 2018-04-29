@@ -23,7 +23,7 @@ var response = await hitBtcRestApi.Trading.GetOrders("BTCUSD");
 ```
 
 #### Web Socket
-Get real-time aggregate trades (*with automatic web socket re-connect*).
+Get real-time aggregate trades.
 
 ```C#
 using Hitbtc;
@@ -31,10 +31,8 @@ using Hitbtc;
 var hitBtcSocketApi = new HitBtcSocketApi();
 //var response = await hitBtcSocketApi.MarketData.GetCurrency("ETH");
 //var response = await hitBtcSocketApi.MarketData.GetCurrencies();
+var response = await hitBtcSocketApi.MarketData.UnsubscribeCandles("BTCUSD");
 
-//rtbResponse.Text = response.Content;
-//var response = await hitBtcSocketApi.MarketData.UnsubscribeCandles("BTCUSD");
-var response = await hitBtcSocketApi.MarketData.GetTrades("BTCUSD","From","till",1);
 ```
 
 ## Donate

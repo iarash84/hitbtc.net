@@ -1,0 +1,63 @@
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Rest - Copy\Rest\bin\Debug\Rest.exe.config
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Rest - Copy\Rest\obj\Debug\Rest.exe
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Rest - Copy\Rest\obj\Debug\Rest.pdb
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Rest - Copy\Rest\bin\Debug\Rest.exe
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Rest - Copy\Rest\bin\Debug\Rest.pdb
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Rest - Copy\Rest\bin\Debug\HitBtc.dll
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Rest - Copy\Rest\bin\Debug\RestSharp.dll
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Rest - Copy\Rest\bin\Debug\Newtonsoft.Json.dll
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Rest - Copy\Rest\bin\Debug\System.ValueTuple.dll
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Rest - Copy\Rest\bin\Debug\HitBtc.pdb
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Rest - Copy\Rest\bin\Debug\Newtonsoft.Json.xml
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Rest - Copy\Rest\bin\Debug\System.ValueTuple.xml
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Rest - Copy\Rest\obj\Debug\Test.Form1.resources
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Rest - Copy\Rest\obj\Debug\Rest.Properties.Resources.resources
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Rest - Copy\Rest\obj\Debug\test.csproj.GenerateResource.Cache
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Rest - Copy\Test\bin\Debug\Rest.exe.config
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Rest - Copy\Test\obj\Debug\Rest.exe
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Rest - Copy\Test\obj\Debug\Rest.pdb
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Rest - Copy\Test\bin\Debug\Rest.exe
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Rest - Copy\Test\bin\Debug\Rest.pdb
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Rest - Copy\Test\bin\Debug\HitBtc.dll
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Rest - Copy\Test\bin\Debug\RestSharp.dll
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Rest - Copy\Test\bin\Debug\Newtonsoft.Json.dll
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Rest - Copy\Test\bin\Debug\System.ValueTuple.dll
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Rest - Copy\Test\bin\Debug\HitBtc.pdb
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Rest - Copy\Test\bin\Debug\Newtonsoft.Json.xml
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Rest - Copy\Test\bin\Debug\System.ValueTuple.xml
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Rest - Copy\Test\obj\Debug\Test.csprojResolveAssemblyReference.cache
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Rest - Copy\Test\obj\Debug\Test.Form1.resources
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Rest - Copy\Test\obj\Debug\Rest.Properties.Resources.resources
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Rest - Copy\Test\obj\Debug\Test.csproj.GenerateResource.Cache
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc_sharp\Test\obj\Debug\Test.csprojResolveAssemblyReference.cache
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc_sharp\Test\obj\Debug\Test.csproj.GenerateResource.Cache
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc_sharp\Test\bin\Debug\HitBtc.dll
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc_sharp\Test\bin\Debug\RestSharp.dll
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc_sharp\Test\bin\Debug\Newtonsoft.Json.dll
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc_sharp\Test\bin\Debug\System.ValueTuple.dll
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc_sharp\Test\bin\Debug\HitBtc.pdb
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc_sharp\Test\bin\Debug\Newtonsoft.Json.xml
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc_sharp\Test\bin\Debug\System.ValueTuple.xml
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc_sharp\Test\bin\Debug\Test.exe.config
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc_sharp\Test\bin\Debug\Test.exe
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc_sharp\Test\bin\Debug\Test.pdb
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc_sharp\Test\obj\Debug\Test.Properties.Resources.resources
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc_sharp\Test\obj\Debug\Test.exe
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc_sharp\Test\obj\Debug\Test.pdb
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc_sharp\Test\obj\Debug\Test.frmTest.resources
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc\Test\bin\Debug\Test.exe.config
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc\Test\obj\Debug\Test.exe
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc\Test\obj\Debug\Test.pdb
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc\Test\bin\Debug\Test.exe
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc\Test\bin\Debug\Test.pdb
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc\Test\bin\Debug\Hitbtc.dll
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc\Test\bin\Debug\RestSharp.dll
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc\Test\bin\Debug\Newtonsoft.Json.dll
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc\Test\bin\Debug\System.ValueTuple.dll
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc\Test\bin\Debug\Hitbtc.pdb
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc\Test\bin\Debug\Newtonsoft.Json.xml
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc\Test\bin\Debug\System.ValueTuple.xml
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc\Test\obj\Debug\Test.csprojResolveAssemblyReference.cache
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc\Test\obj\Debug\Test.frmTest.resources
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc\Test\obj\Debug\Test.Properties.Resources.resources
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc\Test\obj\Debug\Test.csproj.GenerateResource.Cache

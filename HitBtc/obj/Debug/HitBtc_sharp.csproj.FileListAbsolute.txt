@@ -1,0 +1,10 @@
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc_sharp\HitBtc_sharp\obj\Debug\HitBtc_sharp.csprojResolveAssemblyReference.cache
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc_sharp\HitBtc_sharp\obj\Debug\HitBtc.dll
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc_sharp\HitBtc_sharp\obj\Debug\HitBtc.pdb
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc_sharp\HitBtc_sharp\bin\Debug\HitBtc.dll
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc_sharp\HitBtc_sharp\bin\Debug\HitBtc.pdb
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc_sharp\HitBtc_sharp\bin\Debug\Newtonsoft.Json.dll
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc_sharp\HitBtc_sharp\bin\Debug\RestSharp.dll
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc_sharp\HitBtc_sharp\bin\Debug\System.ValueTuple.dll
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc_sharp\HitBtc_sharp\bin\Debug\Newtonsoft.Json.xml
+C:\Users\arc\Documents\Visual Studio 2017\Projects\Hitbtc_sharp\HitBtc_sharp\bin\Debug\System.ValueTuple.xml

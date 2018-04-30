@@ -1,9 +1,14 @@
-﻿namespace Hitbtc.HitBtcModel
+﻿using Newtonsoft.Json;
+
+namespace Hitbtc.HitBtcModel
 {
     public class SocketSubscribe
     {
-        public string jsonrpc { get; set; }
-        public string result { get; set; }
-        public string id { get; set; }
+        [JsonProperty("jsonrpc")]
+        public string Jsonrpc { get; set; }
+        [JsonProperty("result")]
+        public string Result { get; set; }
+        [JsonProperty("id")]
+        public string Id { get; set; }
     }
 }

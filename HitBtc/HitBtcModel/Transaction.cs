@@ -1,19 +1,33 @@
-﻿namespace Hitbtc.HitBtcModel
+﻿using Newtonsoft.Json;
+
+namespace Hitbtc.HitBtcModel
 {
     public class Transaction
     {
-        public string id { get; set; }
-        public string index { get; set; }
-        public string currency { get; set; }
-        public int amount { get; set; }
-        public int fee { get; set; }
-        public double address { get; set; }
-        public string paymentId { get; set; }
-        public double hash { get; set; }
-        public string status { get; set; }
-        public object type { get; set; }
-        public int createdAt { get; set; }
-        public string updatedAt { get; set; }
+        [JsonProperty("id")]
+        public string Id { get; set; }
+        [JsonProperty("index")]
+        public string Index { get; set; }
+        [JsonProperty("currency")]
+        public string Currency { get; set; }
+        [JsonProperty("amount")]
+        public int Amount { get; set; }
+        [JsonProperty("fee")]
+        public int Fee { get; set; }
+        [JsonProperty("address")]
+        public double Address { get; set; }
+        [JsonProperty("paymentId")]
+        public string PaymentId { get; set; }
+        [JsonProperty("hash")]
+        public double Hash { get; set; }
+        [JsonProperty("status")]
+        public string Status { get; set; }
+        [JsonProperty("type")]
+        public object Type { get; set; }
+        [JsonProperty("createdAt")]
+        public int CreatedAt { get; set; }
+        [JsonProperty("updatedAt")]
+        public string UpdatedAt { get; set; }
     }
 
 }

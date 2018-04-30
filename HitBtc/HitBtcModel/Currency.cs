@@ -1,31 +1,44 @@
-﻿namespace Hitbtc.HitBtcModel
+﻿using Newtonsoft.Json;
+
+namespace Hitbtc.HitBtcModel
 {
     public class Currency
     {
-        public string id { get; set; }
+        [JsonProperty("id")]
+        public string Id { get; set; }
 
-        public string fullName { get; set; }
+        [JsonProperty("fullName")]
+        public string FullName { get; set; }
 
-        public bool crypto { get; set; }
+        [JsonProperty("crypto")]
+        public bool Crypto { get; set; }
         //True for cryptocurrencies, false for fiat, ICO and others.
 
-        public bool payinEnabled { get; set; }
+        [JsonProperty("payinEnabled")]
+        public bool PayinEnabled { get; set; }
         //True if cryptocurrency support generate adress or paymentId for deposits
 
-        public bool payinPaymentId { get; set; }
+        [JsonProperty("payinPaymentId")]
+        public bool PayinPaymentId { get; set; }
         // True if cryptocurrency requred use paymentId for deposits
 
-        public int payinConfirmations { get; set; }
+        [JsonProperty("payinConfirmations")]
+        public int PayinConfirmations { get; set; }
         //Confirmations count for cryptocurrency deposits
 
-        public bool payoutEnabled { get; set; }
+        [JsonProperty("payoutEnabled")]
+        public bool PayoutEnabled { get; set; }
 
-        public string payoutFee { get; set; }
+        [JsonProperty("payoutFee")]
+        public string PayoutFee { get; set; }
 
-        public bool payoutIsPaymentId { get; set; }
+        [JsonProperty("payoutIsPaymentId")]
+        public bool PayoutIsPaymentId { get; set; }
 
-        public bool delisted { get; set; }
+        [JsonProperty("delisted")]
+        public bool Delisted { get; set; }
 
-        public bool transferEnabled { get; set; }
+        [JsonProperty("transferEnabled")]
+        public bool TransferEnabled { get; set; }
     }
 }

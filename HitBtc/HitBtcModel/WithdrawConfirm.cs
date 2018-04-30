@@ -1,7 +1,10 @@
-﻿namespace Hitbtc.HitBtcModel
+﻿using Newtonsoft.Json;
+
+namespace Hitbtc.HitBtcModel
 {
     public class WithdrawConfirm
     {
-        public bool result { set; get; }
+        [JsonProperty("result")]
+        public bool Result { set; get; }
     }
 }

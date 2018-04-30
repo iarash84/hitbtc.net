@@ -1,12 +1,14 @@
-﻿namespace Hitbtc.HitBtcModel
-{
-    public class Address
-    {
-        /// <summary>
-        /// address to withdraw to
-        /// </summary>
-        public string address { get; set; }
+﻿using Newtonsoft.Json;
 
-        public string paymentId { get; set; }
+namespace Hitbtc.HitBtcModel
+{
+    public class AddressModel
+
+    {
+        [JsonProperty("address")]
+        public string Address { get; set; }
+
+        [JsonProperty("paymentId")]
+        public string PaymentId { get; set; }
     }
 }

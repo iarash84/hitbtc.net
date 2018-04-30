@@ -1,9 +1,14 @@
-﻿namespace Hitbtc.HitBtcModel
+﻿using Newtonsoft.Json;
+
+namespace Hitbtc.HitBtcModel
 {
     public class Fee
     {
-        public string takeLiquidityRate { get; set; }
-        public string provideLiquidityRate { get; set; }
+        [JsonProperty("takeLiquidityRate")]
+        public string TakeLiquidityRate { get; set; }
+
+        [JsonProperty("provideLiquidityRate")]
+        public string ProvideLiquidityRate { get; set; }
 
     }
 }

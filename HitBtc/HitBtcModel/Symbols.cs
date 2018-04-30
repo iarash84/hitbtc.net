@@ -1,14 +1,24 @@
-﻿namespace Hitbtc.HitBtcModel
+﻿using Newtonsoft.Json;
+
+namespace Hitbtc.HitBtcModel
 {
     public class Symbol
     {
-        public string id { get; set; }
-        public string baseCurrency { get; set; }
-        public string quoteCurrency { get; set; }
-        public string quantityIncrement { get; set; }
-        public string tickSize { get; set; }
-        public string takeLiquidityRate { get; set; }
-        public string provideLiquidityRate { get; set; }
-        public string feeCurrency { get; set; }
+        [JsonProperty("id")]
+        public string Id { get; set; }
+        [JsonProperty("baseCurrency")]
+        public string BaseCurrency { get; set; }
+        [JsonProperty("quoteCurrency")]
+        public string QuoteCurrency { get; set; }
+        [JsonProperty("quantityIncrement")]
+        public string QuantityIncrement { get; set; }
+        [JsonProperty("tickSize")]
+        public string TickSize { get; set; }
+        [JsonProperty("takeLiquidityRate")]
+        public string TakeLiquidityRate { get; set; }
+        [JsonProperty("provideLiquidityRate")]
+        public string ProvideLiquidityRate { get; set; }
+        [JsonProperty("feeCurrency")]
+        public string FeeCurrency { get; set; }
     }
 }

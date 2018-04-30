@@ -1,10 +1,17 @@
-﻿namespace Hitbtc.HitBtcModel
+﻿using Newtonsoft.Json;
+
+namespace Hitbtc.HitBtcModel
 {
     public class Balance
     {
-        public string currency { get; set; }
-        public string available { get; set; }
-        public string reserved { get; set; }
+        [JsonProperty("currency")]
+        public string Currency { get; set; }
+
+        [JsonProperty("available")]
+        public string Available { get; set; }
+
+        [JsonProperty("reserved")]
+        public string Reserved { get; set; }
 
     }
 }

@@ -1,17 +1,23 @@
 ﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Hitbtc.HitBtcModel
 {
     public class Orderbook
     {
-        public List<OrderBookParamter> ask { get; set; }
-        public List<OrderBookParamter> bid { get; set; }
-        public string timestamp { get; set; }
+        [JsonProperty("ask")]
+        public List<OrderBookParamter> Ask { get; set; }
+        [JsonProperty("bid")]
+        public List<OrderBookParamter> Bid { get; set; }
+        [JsonProperty("timestamp")]
+        public string Timestamp { get; set; }
     }
 
     public class OrderBookParamter
     {
-        public string price { set; get; }
-        public string size { set; get; }
+        [JsonProperty("price")]
+        public string Price { set; get; }
+        [JsonProperty("size")]
+        public string Size { set; get; }
     }
 }

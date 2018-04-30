@@ -1,18 +1,25 @@
 ﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Hitbtc.HitBtcModel
 {
     public class SocketCurrency
     {
-        public string jsonrpc { get; set; }
-        public Currency result { get; set; }
-        public string id { get; set; }
+        [JsonProperty("jsonrpc")]
+        public string Jsonrpc { get; set; }
+        [JsonProperty("result")]
+        public Currency Result { get; set; }
+        [JsonProperty("id")]
+        public string Id { get; set; }
     }
     public class SocketCurrencies
     {
-        public string jsonrpc { get; set; }
-        public List<Currency> result { get; set; }
-        public string id { get; set; }
+        [JsonProperty("jsonrpc")]
+        public string Jsonrpc { get; set; }
+        [JsonProperty("result")]
+        public List<Currency> Result { get; set; }
+        [JsonProperty("id")]
+        public string Id { get; set; }
     }
     
 }

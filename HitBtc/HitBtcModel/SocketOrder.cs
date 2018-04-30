@@ -1,53 +1,87 @@
 ﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Hitbtc.HitBtcModel
 {
     public class SocketOrder
     {
-        public string jsonrpc { get; set; }
-        public SocketOrederResult result { get; set; }
-        public string id { get; set; }
+        [JsonProperty("jsonrpc")]
+        public string Jsonrpc { get; set; }
+        [JsonProperty("result")]
+        public SocketOrederResult Result { get; set; }
+        [JsonProperty("id")]
+        public string Id { get; set; }
     }
 
     public class SocketOrderReplace
     {
-        public string jsonrpc { get; set; }
-        public SocketOrderReplaceResult result { get; set; }
-        public string id { get; set; }
+        [JsonProperty("jsonrpc")]
+        public string Jsonrpc { get; set; }
+        [JsonProperty("result")]
+        public SocketOrderReplaceResult Result { get; set; }
+        [JsonProperty("id")]
+        public string Id { get; set; }
     }
 
     public class SocketOrederResult
     {
-        public string id { get; set; }
-        public string clientOrderId { get; set; }
-        public string symbol { get; set; }
-        public string side { get; set; }
-        public string status { get; set; }
-        public string type { get; set; }
-        public string timeInForce { get; set; }
-        public string quantity { get; set; }
-        public string price { get; set; }
-        public string cumQuantity { get; set; }
-        public string createdAt { get; set; }
-        public string updatedAt { get; set; }
-        public string reportType { get; set; }
+        [JsonProperty("id")]
+        public string Id { get; set; }
+        [JsonProperty("clientOrderId")]
+        public string ClientOrderId { get; set; }
+        [JsonProperty("symbol")]
+        public string Symbol { get; set; }
+        [JsonProperty("side")]
+        public string Side { get; set; }
+        [JsonProperty("status")]
+        public string Status { get; set; }
+        [JsonProperty("type")]
+        public string Type { get; set; }
+        [JsonProperty("timeInForce")]
+        public string TimeInForce { get; set; }
+        [JsonProperty("quantity")]
+        public string Quantity { get; set; }
+        [JsonProperty("price")]
+        public string Price { get; set; }
+        [JsonProperty("cumQuantity")]
+        public string CumQuantity { get; set; }
+        [JsonProperty("createdAt")]
+        public string CreatedAt { get; set; }
+        [JsonProperty("updatedAt")]
+        public string UpdatedAt { get; set; }
+        [JsonProperty("reportType")]
+        public string ReportType { get; set; }
     }
 
     public class SocketOrderReplaceResult
     {
-        public string id { get; set; }
-        public string clientOrderId { get; set; }
-        public string symbol { get; set; }
-        public string side { get; set; }
-        public string status { get; set; }
-        public string type { get; set; }
-        public string timeInForce { get; set; }
-        public string quantity { get; set; }
-        public string price { get; set; }
-        public string cumQuantity { get; set; }
-        public string createdAt { get; set; }
-        public string updatedAt { get; set; }
-        public string reportType { get; set; }
-        public string originalRequestClientOrderId { get; set; }
+        [JsonProperty("id")]
+        public string Id { get; set; }
+        [JsonProperty("clientOrderId")]
+        public string ClientOrderId { get; set; }
+        [JsonProperty("symbol")]
+        public string Symbol { get; set; }
+        [JsonProperty("side")]
+        public string Side { get; set; }
+        [JsonProperty("status")]
+        public string Status { get; set; }
+        [JsonProperty("type")]
+        public string Type { get; set; }
+        [JsonProperty("timeInForce")]
+        public string TimeInForce { get; set; }
+        [JsonProperty("quantity")]
+        public string Quantity { get; set; }
+        [JsonProperty("price")]
+        public string Price { get; set; }
+        [JsonProperty("cumQuantity")]
+        public string CumQuantity { get; set; }
+        [JsonProperty("createdAt")]
+        public string CreatedAt { get; set; }
+        [JsonProperty("updatedAt")]
+        public string UpdatedAt { get; set; }
+        [JsonProperty("reportType")]
+        public string ReportType { get; set; }
+        [JsonProperty("originalRequestClientOrderId")]
+        public string OriginalRequestClientOrderId { get; set; }
     }
 }

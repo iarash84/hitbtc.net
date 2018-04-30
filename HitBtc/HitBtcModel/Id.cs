@@ -1,7 +1,10 @@
-﻿namespace Hitbtc.HitBtcModel
+﻿using Newtonsoft.Json;
+
+namespace Hitbtc.HitBtcModel
 {
-    public class Id
+    public class IdObject
     {
-        public string id { set; get; }
+        [JsonProperty("id")]
+        public string Id { set; get; }
     }
 }

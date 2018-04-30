@@ -1,76 +1,92 @@
-﻿namespace Hitbtc.HitBtcModel
+﻿using Newtonsoft.Json;
+
+namespace Hitbtc.HitBtcModel
 {
     public class Order
     {
         /// <summary>
         /// Unique identifier for Order as assigned by exchange
         /// </summary>
-        public int id { get; set; }
+        [JsonProperty("id")]
+        public int Id { get; set; }
 
         /// <summary>
         /// String 	Unique identifier for Order as assigned by trader. Uniqueness must be guaranteed within a single trading day, including all active orders.
         /// </summary>
-        public string clientOrderId { get; set; }
+        [JsonProperty("clientOrderId")]
+        public string ClientOrderId { get; set; }
 
         /// <summary>
         /// Trading symbol
         /// </summary>
-        public long symbol { get; set; }
+        [JsonProperty("symbol")]
+        public long Symbol { get; set; }
 
         /// <summary>
         /// sell buy
         /// </summary>
-        public string side { get; set; }
+        [JsonProperty("side")]
+        public string Side { get; set; }
 
         /// <summary>
         /// new, suspended, partiallyFilled, filled, canceled, expired
         /// </summary>
-        public int status { get; set; }
+        [JsonProperty("status")]
+        public int Status { get; set; }
 
         /// <summary>
         /// limit, market, stopLimit, stopMarket
         /// </summary>
-        public string type { get; set; }
+        [JsonProperty("type")]
+        public string Type { get; set; }
 
         /// <summary>
         /// Time in force
         /// GTC - Good-Til-Canceled, IOC - Immediate-Or-Cancel, OK - Fill-Or-Kill, DAY - day
         /// </summary>
-        public int timeInForce { get; set; }
+        [JsonProperty("timeInForce")]
+        public int TimeInForce { get; set; }
 
         /// <summary>
         /// Number 	Order quantity
         /// </summary>
-        public string quantity { get; set; }
+        [JsonProperty("quantity")]
+        public string Quantity { get; set; }
 
         /// <summary>
         /// Order price
         /// </summary>
-        public string price { get; set; }
+        [JsonProperty("price")]
+        public string Price { get; set; }
 
         /// <summary>
         /// Cumulative executed quantity
         /// </summary>
-        public int cumQuantity { get; set; }
+        [JsonProperty("cumQuantity")]
+        public int CumQuantity { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        public string createdAt { get; set; }
+        [JsonProperty("createdAt")]
+        public string CreatedAt { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        public string updatedAt { get; set; }
+        [JsonProperty("updatedAt")]
+        public string UpdatedAt { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        public string stopPrice { get; set; }
+        [JsonProperty("stopPrice")]
+        public string StopPrice { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        public int expireTime { get; set; }
+        [JsonProperty("expireTime")]
+        public int ExpireTime { get; set; }
     }
 }

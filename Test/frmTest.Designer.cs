@@ -46,7 +46,7 @@
             this.btnPublicTest.TabIndex = 0;
             this.btnPublicTest.Text = "Public Test";
             this.btnPublicTest.UseVisualStyleBackColor = true;
-            this.btnPublicTest.Click += new System.EventHandler(this.btnTest_Click);
+            this.btnPublicTest.Click += new System.EventHandler(this.btnPublicTest_Click);
             // 
             // btnTradingTest
             // 

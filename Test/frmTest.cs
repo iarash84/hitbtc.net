@@ -14,7 +14,7 @@ namespace Test
         private const string ApiKey = "<APIKEY>";
         private const string SecretKey = "<SecretKey>";
 
-        private async void  btnTest_Click(object sender, EventArgs e)
+        private async void btnPublicTest_Click(object sender, EventArgs e)
         {
             var hitBtcRestApi = new HitBtcRestApi();
             //var response = await hitBtcRestApi.PublicData.GetSymbol();
@@ -78,6 +78,8 @@ namespace Test
 
             gridviewReponse.DataSource = response;
         }
+
+
     
     }
 }

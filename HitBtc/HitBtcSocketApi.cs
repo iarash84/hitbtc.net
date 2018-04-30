@@ -24,7 +24,7 @@ namespace Hitbtc
         public SocketTrading Trading { set; get; }
         public bool IsAuthorized { get; set; }
 
-        public HitBtcSocketApi()
+        public HitBtcSocketApi() 
         {
             MarketData = new SocketMarketData(this);
             Trading = new SocketTrading(this);
@@ -61,13 +61,14 @@ namespace Hitbtc
 
         private async Task ConnectToServer()
         {
-            await _clientWebSocket.ConnectAsync(new Uri(Uri), CancellationToken.None);
+            await _clientWebSocket.ConnectAsync(new Uri(Uri), CancellationToken.None).ConfigureAwait(false);
         }
 
         private async Task SendCommand(string jsonCmd)
         {
             ArraySegment<byte> outputBuffer = new ArraySegment<byte>(Encoding.UTF8.GetBytes(jsonCmd));
-            await _clientWebSocket.SendAsync(outputBuffer, WebSocketMessageType.Text, true, CancellationToken.None);
+            await _clientWebSocket.SendAsync(outputBuffer, WebSocketMessageType.Text, true, CancellationToken.None)
+                .ConfigureAwait(false);
         }
 
         private async Task<string> Receive()
@@ -80,7 +81,7 @@ namespace Hitbtc
             {
                 var webSocketReceiveResult = await _clientWebSocket.ReceiveAsync(
                     new ArraySegment<byte>(temporaryBuffer),
-                    CancellationToken.None);
+                    CancellationToken.None).ConfigureAwait(false);
                 temporaryBuffer.CopyTo(buffer, offset);
                 offset += webSocketReceiveResult.Count;
                 temporaryBuffer = new byte[bufferSize];

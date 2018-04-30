@@ -49,7 +49,7 @@ namespace Hitbtc
             if (requireAuthentication)
                 client.Authenticator = new HttpBasicAuthenticator(_apiKey, _secretKey);
 
-            var response = await client.GetResponseAsync(request);
+            var response = await client.GetResponseAsync(request).ConfigureAwait(false);
 
             if (response.ErrorException != null)
             {

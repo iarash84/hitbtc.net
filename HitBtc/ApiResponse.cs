@@ -92,14 +92,14 @@ namespace Hitbtc
             return response == null ? null : Utilities.ConverFromJason<Transaction>(response);
         }
 
-        public static implicit operator Id(ApiResponse response)
+        public static implicit operator IdObject(ApiResponse response)
         {
-            return response == null ? null : Utilities.ConverFromJason<Id>(response);
+            return response == null ? null : Utilities.ConverFromJason<IdObject>(response);
         }
 
-        public static implicit operator Address(ApiResponse response)
+        public static implicit operator AddressModel(ApiResponse response)
         {
-            return response == null ? null : Utilities.ConverFromJason<Address>(response);
+            return response == null ? null : Utilities.ConverFromJason<AddressModel>(response);
         }
 
         public static implicit operator WithdrawConfirm(ApiResponse response)

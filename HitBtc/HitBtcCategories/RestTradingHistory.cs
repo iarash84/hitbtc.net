@@ -28,38 +28,22 @@ namespace Hitbtc.HitBtcCategories
         public async Task<List<TradeHistory>> GetTraders(string symoblName, string from, string till, int offset, int limit = 100,
             PublicEnum.EnSort sort = PublicEnum.EnSort.Desc, PublicEnum.EnBy by = PublicEnum.EnBy.timestamp)
         {
-
             var request = new RestRequest("/api/2/history/trades");
             if (!string.IsNullOrEmpty(symoblName))
-                request.Parameters.Add(new Parameter
-                {
-                    Name = "symbol",
-                    Value = symoblName,
-                    Type = ParameterType.GetOrPost
-                });
+                request.Parameters.Add(new Parameter("symbol", symoblName, ParameterType.GetOrPost));
 
-            request.Parameters.Add(new Parameter
-            {
-                Name = "sort",
-                Value = sort.ToString(),
-                Type = ParameterType.GetOrPost
-            });
+            request.Parameters.Add(new Parameter("sort", sort.ToString(), ParameterType.GetOrPost));
 
-            request.Parameters.Add(new Parameter
-            {
-                Name = "by",
-                Value = by.ToString(),
-                Type = ParameterType.GetOrPost
-            });
+            request.Parameters.Add(new Parameter("by", by.ToString(), ParameterType.GetOrPost));
 
             if (!string.IsNullOrEmpty(from))
-                request.Parameters.Add(new Parameter {Name = "from", Value = from, Type = ParameterType.GetOrPost});
+                request.Parameters.Add(new Parameter("from", from, ParameterType.GetOrPost));
             if (!string.IsNullOrEmpty(till))
-                request.Parameters.Add(new Parameter {Name = "till", Value = till, Type = ParameterType.GetOrPost});
+                request.Parameters.Add(new Parameter("till", till, ParameterType.GetOrPost));
             if (offset > 0)
-                request.Parameters.Add(new Parameter {Name = "offset", Value = offset, Type = ParameterType.GetOrPost});
+                request.Parameters.Add(new Parameter("offset", offset, ParameterType.GetOrPost));
             if (limit > 0)
-                request.Parameters.Add(new Parameter {Name = "limit", Value = limit, Type = ParameterType.GetOrPost});
+                request.Parameters.Add(new Parameter("limit", limit, ParameterType.GetOrPost));
 
             return await _hitBtcRestApi.Execute(request);
         }
@@ -74,29 +58,17 @@ namespace Hitbtc.HitBtcCategories
 
             var request = new RestRequest("/api/2/history/order");
             if (!string.IsNullOrEmpty(symoblName))
-                request.Parameters.Add(new Parameter
-                {
-                    Name = "symbol",
-                    Value = symoblName,
-                    Type = ParameterType.GetOrPost
-                });
+                request.Parameters.Add(new Parameter("symbol", symoblName, ParameterType.GetOrPost));
             if (!string.IsNullOrEmpty(clientOrderId))
-                request.Parameters.Add(new Parameter
-                {
-                    Name = "clientOrderId",
-                    Value = clientOrderId,
-                    Type = ParameterType.GetOrPost
-                });
+                request.Parameters.Add(new Parameter("clientOrderId", clientOrderId, ParameterType.GetOrPost));
             if (!string.IsNullOrEmpty(from))
-                request.Parameters.Add(new Parameter {Name = "from", Value = from, Type = ParameterType.GetOrPost});
+                request.Parameters.Add(new Parameter("from", from, ParameterType.GetOrPost));
             if (!string.IsNullOrEmpty(till))
-                request.Parameters.Add(new Parameter {Name = "till", Value = till, Type = ParameterType.GetOrPost});
+                request.Parameters.Add(new Parameter("till", till, ParameterType.GetOrPost));
             if (offset > 0)
-                request.Parameters.Add(new Parameter {Name = "offset", Value = offset, Type = ParameterType.GetOrPost});
+                request.Parameters.Add(new Parameter("offset", offset, ParameterType.GetOrPost));
             if (limit > 0)
-                request.Parameters.Add(new Parameter {Name = "limit", Value = limit, Type = ParameterType.GetOrPost});
-
-
+                request.Parameters.Add(new Parameter("limit", limit, ParameterType.GetOrPost));
 
             return await _hitBtcRestApi.Execute(request);
         }
@@ -111,6 +83,5 @@ namespace Hitbtc.HitBtcCategories
             request.AddParameter("orderId", orderId, ParameterType.UrlSegment);
             return await _hitBtcRestApi.Execute(request);
         }
-
     }
 }

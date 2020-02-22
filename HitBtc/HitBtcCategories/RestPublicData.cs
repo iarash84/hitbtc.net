@@ -50,12 +50,12 @@ namespace Hitbtc.HitBtcCategories
 
         public async Task<Ticker> GetTicker(string symbolName, string period = null, int limit = 0)
         {
-            var request = new RestRequest {Resource = "api/2/public/ticker/{symbol}"};
+            var request = new RestRequest { Resource = "api/2/public/ticker/{symbol}" };
             request.AddParameter("symbol", symbolName, ParameterType.UrlSegment);
             if (limit > 0)
-                request.Parameters.Add(new Parameter {Name = "limit", Value = limit, Type = ParameterType.GetOrPost});
+                request.Parameters.Add(new Parameter("limit", limit, ParameterType.GetOrPost));
             if (!string.IsNullOrEmpty(period))
-                request.Parameters.Add(new Parameter {Name = "period", Value = period, Type = ParameterType.GetOrPost});
+                request.Parameters.Add(new Parameter("period", period, ParameterType.GetOrPost));
             return await _hitBtcRestApi.Execute(request, false);
         }
 
@@ -63,7 +63,7 @@ namespace Hitbtc.HitBtcCategories
         {
             var request = new RestRequest("api/2/public/orderbook/{symbol}");
             request.AddParameter("symbol", symbolName, ParameterType.UrlSegment);
-            request.Parameters.Add(new Parameter { Name = "limit", Value = limit, Type = ParameterType.GetOrPost });
+            request.Parameters.Add(new Parameter("limit", limit, ParameterType.GetOrPost));
             return await _hitBtcRestApi.Execute(request, false);
         }
 

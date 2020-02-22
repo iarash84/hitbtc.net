@@ -20,7 +20,6 @@ namespace Hitbtc.HitBtcCategories
             return await _hitBtcSocketApi.Execute(request, false);
         }
 
-
         public async Task<SocketCurrency> GetCurrency(string currencyName, int id = 123)
         {
             var request =
@@ -30,7 +29,7 @@ namespace Hitbtc.HitBtcCategories
             return await _hitBtcSocketApi.Execute(request, false);
         }
 
-        public async Task<SocketSymbols> GetSymbols( int id = 123)
+        public async Task<SocketSymbols> GetSymbols(int id = 123)
         {
             var request = string.Format("{{ \"method\": \"getSymbols\", \"params\": {{  }}, \"id\": {0} }}", id);
             return await _hitBtcSocketApi.Execute(request, false);
@@ -48,7 +47,7 @@ namespace Hitbtc.HitBtcCategories
         {
             var request =
                 string.Format(
-                    "{{ \"method\": \"subscribeTicker\", \"params\": {{ \"symbol\": \"{0}\" }}, \"id\": {1} }}", 
+                    "{{ \"method\": \"subscribeTicker\", \"params\": {{ \"symbol\": \"{0}\" }}, \"id\": {1} }}",
                     symbol, id);
             return await _hitBtcSocketApi.Execute(request, false);
         }
@@ -97,7 +96,6 @@ namespace Hitbtc.HitBtcCategories
                     symbol, id);
             return await _hitBtcSocketApi.Execute(request, false);
         }
-
 
         public async Task<SocketSubscribe> SubscribeCandles(string symbol, PublicEnum.EnPeriod enPeriod = PublicEnum.EnPeriod.M30, int id = 123)
         {
@@ -204,11 +202,11 @@ namespace Hitbtc.HitBtcCategories
 
             askParamter = asks.Aggregate(askParamter,
                 (current, ask) =>
-                    current + string.Format(" {{\"price\":\"{0}\",\"size\":\"{1}\"}},", ask.price, ask.size));
+                    current + string.Format(" {{\"price\":\"{0}\",\"size\":\"{1}\"}},", ask.Price, ask.Size));
 
             askParamter = bids.Aggregate(askParamter,
                 (current, bid) =>
-                    current + string.Format(" {{\"price\":\"{0}\",\"size\":\"{1}\"}},", bid.price, bid.size));
+                    current + string.Format(" {{\"price\":\"{0}\",\"size\":\"{1}\"}},", bid.Price, bid.Size));
 
             askParamter = askParamter.TrimEnd(',');
             bidParamter = bidParamter.TrimEnd(',');
@@ -234,11 +232,11 @@ namespace Hitbtc.HitBtcCategories
 
             askParamter = asks.Aggregate(askParamter,
                 (current, ask) =>
-                    current + string.Format(" {{\"price\":\"{0}\",\"size\":\"{1}\"}},", ask.price, ask.size));
+                    current + string.Format(" {{\"price\":\"{0}\",\"size\":\"{1}\"}},", ask.Price, ask.Size));
 
             askParamter = bids.Aggregate(askParamter,
                 (current, bid) =>
-                    current + string.Format(" {{\"price\":\"{0}\",\"size\":\"{1}\"}},", bid.price, bid.size));
+                    current + string.Format(" {{\"price\":\"{0}\",\"size\":\"{1}\"}},", bid.Price, bid.Size));
 
             askParamter = askParamter.TrimEnd(',');
             bidParamter = bidParamter.TrimEnd(',');
@@ -261,7 +259,7 @@ namespace Hitbtc.HitBtcCategories
                     current +
                     string.Format(
                         " {{\"id\":{0},\"price\":\"{1}\",\"quantity\":\"{2}\",\"side\":\"{3}\",\"timestamp\":\"{4}\"}},",
-                        parameter.id, parameter.price, parameter.quantity, parameter.side, parameter.timestamp));
+                        parameter.Id, parameter.Price, parameter.Quantity, parameter.Side, parameter.Timestamp));
 
             dataParameters = dataParameters.TrimEnd(',');
             var request =
@@ -278,13 +276,13 @@ namespace Hitbtc.HitBtcCategories
         /// <param name="data"></param>
         public async void NotificationUpdateTrades(string symbol, List<SocketTrade> data)
         {
-            
+
             string dataParameters = data.Aggregate(string.Empty,
                 (current, parameter) =>
                     current +
                     string.Format(
                         " {{\"id\":{0},\"price\":\"{1}\",\"quantity\":\"{2}\",\"side\":\"{3}\",\"timestamp\":\"{4}\"}},",
-                        parameter.id, parameter.price, parameter.quantity, parameter.side, parameter.timestamp));
+                        parameter.Id, parameter.Price, parameter.Quantity, parameter.Side, parameter.Timestamp));
 
             dataParameters = dataParameters.TrimEnd(',');
             var request =
@@ -307,8 +305,8 @@ namespace Hitbtc.HitBtcCategories
                     current +
                     string.Format(
                         " {{\"timestamp\":\"{0}\",\"open\":\"{1}\",\"close\":\"{2}\",\"min\":\"{3}\",\"max\":\"{4}\",\"volume\":\"{5}\",\"volumeQuote\":\"{6}\"}},",
-                        parameter.timestamp, parameter.open, parameter.close, parameter.min, parameter.max,
-                        parameter.volume, parameter.volumeQuote));
+                        parameter.Timestamp, parameter.Open, parameter.Close, parameter.Min, parameter.Max,
+                        parameter.Volume, parameter.VolumeQuote));
 
             dataParameters = dataParameters.TrimEnd(',');
             var period = enPeriod.ToString() == "Month" ? "1M" : enPeriod.ToString();
@@ -332,8 +330,8 @@ namespace Hitbtc.HitBtcCategories
                     current +
                     string.Format(
                         " {{\"timestamp\":\"{0}\",\"open\":\"{1}\",\"close\":\"{2}\",\"min\":\"{3}\",\"max\":\"{4}\",\"volume\":\"{5}\",\"volumeQuote\":\"{6}\"}},",
-                        parameter.timestamp, parameter.open, parameter.close, parameter.min, parameter.max,
-                        parameter.volume, parameter.volumeQuote));
+                        parameter.Timestamp, parameter.Open, parameter.Close, parameter.Min, parameter.Max,
+                        parameter.Volume, parameter.VolumeQuote));
 
             dataParameters = dataParameters.TrimEnd(',');
             var period = enPeriod.ToString() == "Month" ? "1M" : enPeriod.ToString();
@@ -343,7 +341,6 @@ namespace Hitbtc.HitBtcCategories
                     dataParameters, symbol, period);
             await _hitBtcSocketApi.Execute(request);
         }
-
     }
 }
 

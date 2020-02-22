@@ -27,7 +27,7 @@ namespace Hitbtc.HitBtcCategories
         /// </summary>
         /// <param name="currency"></param>
         /// <returns></returns>
-        public async Task<Address> GetAddress(string currency)
+        public async Task<AddressModel> GetAddress(string currency)
         {
             var request = new RestRequest("/api/2/account/crypto/address/{currency}");
             request.AddParameter("currency", currency, ParameterType.UrlSegment);
@@ -39,7 +39,7 @@ namespace Hitbtc.HitBtcCategories
         /// </summary>
         /// <param name="currency"></param>
         /// <returns></returns>
-        public async Task<Address> PostAddress(string currency)
+        public async Task<AddressModel> PostAddress(string currency)
         {
             var request = new RestRequest("/api/2/account/crypto/address/{currency}", Method.POST);
             request.AddParameter("currency", currency, ParameterType.UrlSegment);
@@ -57,7 +57,7 @@ namespace Hitbtc.HitBtcCategories
         /// <param name="includeFee">Default false. If set true then total will be spent the specified amount, fee and networkFee will be deducted from the amount</param>
         /// <param name="autoCommit">Default true. If set false then you should commit or rollback transaction in an hour. Used in two phase commit schema.</param>
         /// <returns>Unique identifier for Transaction as assigned by exchange</returns>
-        public async Task<Id> PostWithraw(string currency, int amount, string address, string paymentId = null,
+        public async Task<IdObject> PostWithraw(string currency, int amount, string address, string paymentId = null,
             string networkFee = null, bool includeFee = false, bool autoCommit = true)
         {
             var request = new RestRequest("/api/2/account/crypto/withdraw");
@@ -107,7 +107,7 @@ namespace Hitbtc.HitBtcCategories
         /// <param name="amount"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        public async Task<Id> PostTransfer(string currency, int amount,
+        public async Task<IdObject> PostTransfer(string currency, int amount,
             PublicEnum.EnTransferType type = PublicEnum.EnTransferType.bankToExchange)
         {
             var request = new RestRequest("/api/2/account/transfer", Method.POST);

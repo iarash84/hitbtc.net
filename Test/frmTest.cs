@@ -32,8 +32,6 @@ namespace Test
 
         private async void btnTradingTest_Click(object sender, EventArgs e)
         {
-
-
             var hitBtcRestApi = new HitBtcRestApi();
             if (!hitBtcRestApi.IsAuthorized)
                 hitBtcRestApi.Authorize(ApiKey, SecretKey);
@@ -78,8 +76,5 @@ namespace Test
 
             gridviewReponse.DataSource = response;
         }
-
-
-    
     }
 }

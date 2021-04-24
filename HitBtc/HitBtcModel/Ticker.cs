@@ -52,8 +52,8 @@ namespace Hitbtc.HitBtcModel
         /// <summary>
         /// Volume in second currency per last 24h + last incomplete minute
         /// </summary>
-        [JsonProperty("volumeQuoute")]
-        public string VolumeQuoute { get; set; }
+        [JsonProperty("volumeQuote")]
+        public string VolumeQuote { get; set; }
 
         /// <summary>
         /// Server time in UNIX timestamp format
@@ -72,7 +72,7 @@ namespace Hitbtc.HitBtcModel
             sb.AppendLine(string.Format("low:{0}", Low));
             sb.AppendLine(string.Format("high:{0}", High));
             sb.AppendLine(string.Format("volume:{0}", Volume));
-            sb.AppendLine(string.Format("volume_quote:{0}", VolumeQuoute));
+            sb.AppendLine(string.Format("volume_quote:{0}", VolumeQuote));
             sb.AppendLine(string.Format("timestamp:{0}", Timestamp));
             sb.AppendLine(string.Format("symbol:{0}", Symbol));
 

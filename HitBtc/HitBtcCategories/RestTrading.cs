@@ -23,7 +23,7 @@ namespace Hitbtc.HitBtcCategories
         /// <returns></returns>
         public async Task<List<Balance>> GetBalance()
         {
-            return await _hitBtcRestApi.Execute(new RestRequest("/api/2/trading/balance", Method.GET));
+            return await _hitBtcRestApi.Execute(new RestRequest("/api/2/trading/balance", Method.Get));
         }
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace Hitbtc.HitBtcCategories
         /// <returns></returns>
         public async Task<Fee> GetFee(string symbolName)
         {
-            var request = new RestRequest("/api/2/trading/fee/{symbol}", Method.GET);
+            var request = new RestRequest("/api/2/trading/fee/{symbol}", Method.Get);
             request.AddParameter("symbol", symbolName, ParameterType.UrlSegment);
             return await _hitBtcRestApi.Execute(request);
         }
@@ -46,7 +46,7 @@ namespace Hitbtc.HitBtcCategories
         //public async Task<List<Order>> GetOrders(string symbolName)
         public async Task<List<Order>> GetOrders(string symbolName)
         {
-            var request = new RestRequest("/api/2/order", Method.GET);
+            var request = new RestRequest("/api/2/order", Method.Get);
             request.AddParameter("symbol", symbolName, ParameterType.UrlSegment);
             return await _hitBtcRestApi.Execute(request);
         }
@@ -72,7 +72,7 @@ namespace Hitbtc.HitBtcCategories
             string price = null, string stopPrice = null, string expireTime = null,
             string clientOrderId = null, bool strictValidate = false)
         {
-            var request = new RestRequest("/api/2/order", Method.POST);
+            var request = new RestRequest("/api/2/order", Method.Post);
             request.AddParameter("symbol", symbolName, ParameterType.UrlSegment);
             request.AddParameter("quantity", quantity, ParameterType.UrlSegment);
             request.AddParameter("side", side, ParameterType.UrlSegment);
@@ -97,7 +97,7 @@ namespace Hitbtc.HitBtcCategories
         /// <returns></returns>
         public async Task<List<Order>> DeleteOrders(string symbolName)
         {
-            var request = new RestRequest("/api/2/order", Method.DELETE);
+            var request = new RestRequest("/api/2/order", Method.Delete);
             request.AddParameter("symbol", symbolName, ParameterType.UrlSegment);
             return await _hitBtcRestApi.Execute(request);
         }
@@ -111,7 +111,7 @@ namespace Hitbtc.HitBtcCategories
         /// <returns></returns>
         public async Task<Order> GetOrder(string clientOrderId, int wait = 0)
         {
-            var request = new RestRequest("/api/2/order/{clientOrderId}", Method.GET);
+            var request = new RestRequest("/api/2/order/{clientOrderId}", Method.Get);
             request.AddParameter("clientOrderId", clientOrderId, ParameterType.UrlSegment);
             if (wait > 0)
                 request.AddParameter("wait", wait, ParameterType.UrlSegment);
@@ -138,7 +138,7 @@ namespace Hitbtc.HitBtcCategories
             PublicEnum.EnTradingTimeInForce timeInForce = PublicEnum.EnTradingTimeInForce.GTC,
             string price = null, string stopPrice = null, string expireTime = null, bool strictValidate = false)
         {
-            var request = new RestRequest("/api/2/order/{clientOrderId}", Method.PUT);
+            var request = new RestRequest("/api/2/order/{clientOrderId}", Method.Put);
             request.AddParameter("clientOrderId", clientOrderId, ParameterType.UrlSegment);
             request.AddParameter("symbol", symbolName, ParameterType.UrlSegment);
             request.AddParameter("quantity", quantity, ParameterType.UrlSegment);
@@ -162,7 +162,7 @@ namespace Hitbtc.HitBtcCategories
         /// <returns></returns>
         public async Task<Order> DeleteOrder(string clientOrderId)
         {
-            var request = new RestRequest("/api/2/order", Method.DELETE);
+            var request = new RestRequest("/api/2/order", Method.Delete);
             request.AddParameter("clientOrderId", clientOrderId, ParameterType.UrlSegment);
             return await _hitBtcRestApi.Execute(request);
         }
@@ -178,7 +178,7 @@ namespace Hitbtc.HitBtcCategories
         public async Task<Order> PatchOrder(string clientOrderId, string quantity, string requestClientId,
             string price = null)
         {
-            var request = new RestRequest("/api/2/order/{clientOrderId}", Method.PATCH);
+            var request = new RestRequest("/api/2/order/{clientOrderId}", Method.Patch);
             request.AddParameter("clientOrderId", clientOrderId, ParameterType.UrlSegment);
             request.AddParameter("quantity", quantity, ParameterType.UrlSegment);
             request.AddParameter("requestClientId", requestClientId, ParameterType.UrlSegment);

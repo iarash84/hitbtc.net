@@ -41,7 +41,7 @@ namespace Hitbtc.HitBtcCategories
         /// <returns></returns>
         public async Task<AddressModel> PostAddress(string currency)
         {
-            var request = new RestRequest("/api/2/account/crypto/address/{currency}", Method.POST);
+            var request = new RestRequest("/api/2/account/crypto/address/{currency}", Method.Post);
             request.AddParameter("currency", currency, ParameterType.UrlSegment);
             return await _hitBtcRestApi.Execute(request);
         }
@@ -95,7 +95,7 @@ namespace Hitbtc.HitBtcCategories
         /// <returns></returns>
         public async Task<WithdrawConfirm> DeleteWithraw(string withrawId)
         {
-            var request = new RestRequest("/api/2/account/crypto/withdraw/{id}", Method.DELETE);
+            var request = new RestRequest("/api/2/account/crypto/withdraw/{id}", Method.Delete);
             request.AddParameter("id", withrawId, ParameterType.UrlSegment);
             return await _hitBtcRestApi.Execute(request);
         }
@@ -110,7 +110,7 @@ namespace Hitbtc.HitBtcCategories
         public async Task<IdObject> PostTransfer(string currency, int amount,
             PublicEnum.EnTransferType type = PublicEnum.EnTransferType.bankToExchange)
         {
-            var request = new RestRequest("/api/2/account/transfer", Method.POST);
+            var request = new RestRequest("/api/2/account/transfer", Method.Post);
             if (!string.IsNullOrEmpty(currency))
                 request.AddParameter("currency", currency, ParameterType.UrlSegment);
             if (amount > 0)
@@ -144,7 +144,7 @@ namespace Hitbtc.HitBtcCategories
         public async Task<List<Transaction>> GetTransaction(string transactionId, string currency, string from, string till, int offset, int limit = 100,
             PublicEnum.EnSort sort = PublicEnum.EnSort.Desc, PublicEnum.EnBy by = PublicEnum.EnBy.timestamp)
         {
-            var request = new RestRequest("/api/2/account/transactions/{id}", Method.GET);
+            var request = new RestRequest("/api/2/account/transactions/{id}", Method.Get);
             request.AddParameter("id", transactionId, ParameterType.UrlSegment);
             if (!string.IsNullOrEmpty(currency))
                 request.AddParameter("currency", currency, ParameterType.UrlSegment);

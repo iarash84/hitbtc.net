@@ -53,9 +53,9 @@ namespace Hitbtc.HitBtcCategories
             var request = new RestRequest { Resource = "api/2/public/ticker/{symbol}" };
             request.AddParameter("symbol", symbolName, ParameterType.UrlSegment);
             if (limit > 0)
-                request.Parameters.Add(new Parameter("limit", limit, ParameterType.GetOrPost));
+                request.AddQueryParameter("limit", limit.ToString());
             if (!string.IsNullOrEmpty(period))
-                request.Parameters.Add(new Parameter("period", period, ParameterType.GetOrPost));
+                request.AddQueryParameter("period", period);
             return await _hitBtcRestApi.Execute(request, false);
         }
 
@@ -63,7 +63,7 @@ namespace Hitbtc.HitBtcCategories
         {
             var request = new RestRequest("api/2/public/orderbook/{symbol}");
             request.AddParameter("symbol", symbolName, ParameterType.UrlSegment);
-            request.Parameters.Add(new Parameter("limit", limit, ParameterType.GetOrPost));
+            request.AddQueryParameter("limit", limit.ToString());
             return await _hitBtcRestApi.Execute(request, false);
         }
 

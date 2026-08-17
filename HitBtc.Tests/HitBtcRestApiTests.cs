@@ -38,9 +38,22 @@ namespace Hitbtc.Tests
             var api = new HitBtcRestApi();
             var request = new RestRequest("/api/2/trading/balance", Method.Get);
 
-            var exception = await Assert.ThrowsAsync<Exception>(() => api.Execute(request));
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => api.Execute(request));
 
-            Assert.Equal("AccessTokenInvalid", exception.Message);
+            Assert.Contains("requires authorization", exception.Message);
+        }
+
+        [Theory]
+        [InlineData(null, "secret")]
+        [InlineData("", "secret")]
+        [InlineData("key", null)]
+        [InlineData("key", "  ")]
+        public void Authorize_MissingCredential_ThrowsAndKeepsUnauthorized(string apiKey, string secretKey)
+        {
+            var api = new HitBtcRestApi();
+
+            Assert.Throws<ArgumentException>(() => api.Authorize(apiKey, secretKey));
+            Assert.False(api.IsAuthorized);
         }
 
         private static string ReadPrivateField(HitBtcRestApi api, string fieldName)

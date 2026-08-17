@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Threading;
 using Hitbtc.HitBtcCategories;
 using RestSharp;
 using RestSharp.Authenticators;
@@ -39,10 +40,25 @@ namespace Hitbtc
             Account = new RestAccount(this);
         }
 
-        public async Task<ApiResponse> Execute(RestRequest request, bool requireAuthentication = true)
+        public virtual Task<ApiResponse> Execute(RestRequest request, bool requireAuthentication = true)
         {
+            return ExecuteCore(request, requireAuthentication, CancellationToken.None);
+        }
+
+        /// <summary>Executes a REST request with cancellation support.</summary>
+        public virtual Task<ApiResponse> Execute(RestRequest request, bool requireAuthentication,
+            CancellationToken cancellationToken)
+        {
+            return ExecuteCore(request, requireAuthentication, cancellationToken);
+        }
+
+        private async Task<ApiResponse> ExecuteCore(RestRequest request, bool requireAuthentication,
+            CancellationToken cancellationToken)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
             if (requireAuthentication && !IsAuthorized)
-                throw new Exception("AccessTokenInvalid");
+                throw new InvalidOperationException("The request requires authorization. Call Authorize first.");
 
             var options = new RestClientOptions(Url);
 
@@ -51,13 +67,13 @@ namespace Hitbtc
 
             using (var client = new RestClient(options))
             {
-                var response = await client.ExecuteAsync(request).ConfigureAwait(false);
+                var response = await client.ExecuteAsync(request, cancellationToken).ConfigureAwait(false);
 
-                if (response.ErrorException != null)
+                if (response.ErrorException != null || !response.IsSuccessful)
                 {
-                    const string message = "Error retrieving response.  Check inner details for more info.";
-                    var exception = new ApplicationException(message, response.ErrorException);
-                    throw exception;
+                    var message = string.Format("HitBTC request failed with HTTP status {0} ({1}).",
+                        (int)response.StatusCode, response.StatusDescription);
+                    throw new ApplicationException(message, response.ErrorException);
                 }
 
                 return new ApiResponse { Content = response.Content };
@@ -76,6 +92,10 @@ namespace Hitbtc
         /// <param name="secretKey">Secret key from the Settings page.</param>
         public void Authorize(string apiKey, string secretKey)
         {
+            if (string.IsNullOrWhiteSpace(apiKey))
+                throw new ArgumentException("API key cannot be empty.", nameof(apiKey));
+            if (string.IsNullOrWhiteSpace(secretKey))
+                throw new ArgumentException("Secret key cannot be empty.", nameof(secretKey));
             _apiKey = apiKey;
             _secretKey = secretKey;
             IsAuthorized = true;

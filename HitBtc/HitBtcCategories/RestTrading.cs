@@ -47,7 +47,7 @@ namespace Hitbtc.HitBtcCategories
         public async Task<List<Order>> GetOrders(string symbolName)
         {
             var request = new RestRequest("/api/2/order", Method.Get);
-            request.AddParameter("symbol", symbolName, ParameterType.UrlSegment);
+            request.AddQueryParameter("symbol", symbolName);
             return await _hitBtcRestApi.Execute(request);
         }
 
@@ -73,20 +73,20 @@ namespace Hitbtc.HitBtcCategories
             string clientOrderId = null, bool strictValidate = false)
         {
             var request = new RestRequest("/api/2/order", Method.Post);
-            request.AddParameter("symbol", symbolName, ParameterType.UrlSegment);
-            request.AddParameter("quantity", quantity, ParameterType.UrlSegment);
-            request.AddParameter("side", side, ParameterType.UrlSegment);
-            request.AddParameter("type", type, ParameterType.UrlSegment);
-            request.AddParameter("timeInForce", timeInForce, ParameterType.UrlSegment);
+            request.AddParameter("symbol", symbolName);
+            request.AddParameter("quantity", quantity);
+            request.AddParameter("side", side.ToString());
+            request.AddParameter("type", type.ToString());
+            request.AddParameter("timeInForce", timeInForce.ToString());
             if (!string.IsNullOrEmpty(price))
-                request.AddParameter("price", price, ParameterType.UrlSegment);
+                request.AddParameter("price", price);
             if (!string.IsNullOrEmpty(stopPrice))
-                request.AddParameter("stopPrice", stopPrice, ParameterType.UrlSegment);
+                request.AddParameter("stopPrice", stopPrice);
             if (!string.IsNullOrEmpty(expireTime))
-                request.AddParameter("expireTime", expireTime, ParameterType.UrlSegment);
+                request.AddParameter("expireTime", expireTime);
             if (!string.IsNullOrEmpty(clientOrderId))
-                request.AddParameter("clientOrderId", clientOrderId, ParameterType.UrlSegment);
-            request.AddParameter("strictValidate", strictValidate, ParameterType.UrlSegment);
+                request.AddParameter("clientOrderId", clientOrderId);
+            request.AddParameter("strictValidate", strictValidate);
             return await _hitBtcRestApi.Execute(request);
         }
 
@@ -98,7 +98,7 @@ namespace Hitbtc.HitBtcCategories
         public async Task<List<Order>> DeleteOrders(string symbolName)
         {
             var request = new RestRequest("/api/2/order", Method.Delete);
-            request.AddParameter("symbol", symbolName, ParameterType.UrlSegment);
+            request.AddQueryParameter("symbol", symbolName);
             return await _hitBtcRestApi.Execute(request);
         }
 
@@ -114,7 +114,7 @@ namespace Hitbtc.HitBtcCategories
             var request = new RestRequest("/api/2/order/{clientOrderId}", Method.Get);
             request.AddParameter("clientOrderId", clientOrderId, ParameterType.UrlSegment);
             if (wait > 0)
-                request.AddParameter("wait", wait, ParameterType.UrlSegment);
+                request.AddQueryParameter("wait", wait.ToString());
             return await _hitBtcRestApi.Execute(request);
         }
 
@@ -140,18 +140,18 @@ namespace Hitbtc.HitBtcCategories
         {
             var request = new RestRequest("/api/2/order/{clientOrderId}", Method.Put);
             request.AddParameter("clientOrderId", clientOrderId, ParameterType.UrlSegment);
-            request.AddParameter("symbol", symbolName, ParameterType.UrlSegment);
-            request.AddParameter("quantity", quantity, ParameterType.UrlSegment);
-            request.AddParameter("side", side, ParameterType.UrlSegment);
-            request.AddParameter("type", type, ParameterType.UrlSegment);
-            request.AddParameter("timeInForce", timeInForce, ParameterType.UrlSegment);
+            request.AddParameter("symbol", symbolName);
+            request.AddParameter("quantity", quantity);
+            request.AddParameter("side", side.ToString());
+            request.AddParameter("type", type.ToString());
+            request.AddParameter("timeInForce", timeInForce.ToString());
             if (!string.IsNullOrEmpty(price))
-                request.AddParameter("price", price, ParameterType.UrlSegment);
+                request.AddParameter("price", price);
             if (!string.IsNullOrEmpty(stopPrice))
-                request.AddParameter("stopPrice", stopPrice, ParameterType.UrlSegment);
+                request.AddParameter("stopPrice", stopPrice);
             if (!string.IsNullOrEmpty(expireTime))
-                request.AddParameter("expireTime", expireTime, ParameterType.UrlSegment);
-            request.AddParameter("strictValidate", strictValidate, ParameterType.UrlSegment);
+                request.AddParameter("expireTime", expireTime);
+            request.AddParameter("strictValidate", strictValidate);
             return await _hitBtcRestApi.Execute(request);
         }
 
@@ -162,7 +162,7 @@ namespace Hitbtc.HitBtcCategories
         /// <returns></returns>
         public async Task<Order> DeleteOrder(string clientOrderId)
         {
-            var request = new RestRequest("/api/2/order", Method.Delete);
+            var request = new RestRequest("/api/2/order/{clientOrderId}", Method.Delete);
             request.AddParameter("clientOrderId", clientOrderId, ParameterType.UrlSegment);
             return await _hitBtcRestApi.Execute(request);
         }
@@ -180,10 +180,10 @@ namespace Hitbtc.HitBtcCategories
         {
             var request = new RestRequest("/api/2/order/{clientOrderId}", Method.Patch);
             request.AddParameter("clientOrderId", clientOrderId, ParameterType.UrlSegment);
-            request.AddParameter("quantity", quantity, ParameterType.UrlSegment);
-            request.AddParameter("requestClientId", requestClientId, ParameterType.UrlSegment);
+            request.AddParameter("quantity", quantity);
+            request.AddParameter("requestClientId", requestClientId);
             if (!string.IsNullOrEmpty(price))
-                request.AddParameter("price", price, ParameterType.UrlSegment);
+                request.AddParameter("price", price);
             return await _hitBtcRestApi.Execute(request);
         }
     }

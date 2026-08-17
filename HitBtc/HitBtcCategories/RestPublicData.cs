@@ -72,7 +72,7 @@ namespace Hitbtc.HitBtcCategories
             var period = enPeriod.ToString() == "Month" ? "1M" : enPeriod.ToString();
             var request = new RestRequest("api/2/public/candles/{symbol}");
             request.AddParameter("symbol", symbolName, ParameterType.UrlSegment);
-            request.AddParameter("period", period, ParameterType.UrlSegment);
+            request.AddQueryParameter("period", period);
             return await _hitBtcRestApi.Execute(request, false);
         }
     }

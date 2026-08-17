@@ -34,14 +34,3 @@ var hitBtcSocketApi = new HitBtcSocketApi();
 var response = await hitBtcSocketApi.MarketData.UnsubscribeCandles("BTCUSD");
 
 ```
-
-## Donate
-If you find this tool useful, you can show you support with a kind donation:
-
-**ETH**: 0x4e135a99630a391b71979a57f34f85ad28a1a1ef\
-**LTC**: LLgZmzfLA6uLTVqCfZBHub3C3dhjBbMxk2\
-**BTC**: 3QuChD5q4FXU8iW3zCsCV6GJvcJegAvTsi
-
-Thank you.
-
-

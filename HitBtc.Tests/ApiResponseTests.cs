@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Hitbtc.HitBtcModel;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace Hitbtc.Tests
@@ -43,25 +44,53 @@ namespace Hitbtc.Tests
         }
 
         [Fact]
-        public void InvalidObjectJson_ReturnsEmptyModelInsteadOfThrowing()
+        public void InvalidObjectJson_ThrowsJsonException()
         {
             var response = new ApiResponse { Content = "not-json" };
 
-            Symbol symbol = response;
-
-            Assert.NotNull(symbol);
-            Assert.Null(symbol.Id);
+            Assert.Throws<JsonReaderException>(() =>
+            {
+                Symbol symbol = response;
+            });
         }
 
         [Fact]
-        public void InvalidListJson_ReturnsEmptyListInsteadOfThrowing()
+        public void InvalidListJson_ThrowsJsonException()
         {
             var response = new ApiResponse { Content = "not-json" };
 
-            List<Balance> balances = response;
+            Assert.Throws<JsonReaderException>(() =>
+            {
+                List<Balance> balances = response;
+            });
+        }
 
-            Assert.NotNull(balances);
-            Assert.Empty(balances);
+        [Theory]
+        [InlineData("")]
+        [InlineData("   ")]
+        [InlineData("null")]
+        public void EmptyObjectResponse_ThrowsJsonSerializationException(string content)
+        {
+            var response = new ApiResponse { Content = content };
+
+            Assert.Throws<JsonSerializationException>(() =>
+            {
+                Symbol symbol = response;
+            });
+        }
+
+        [Fact]
+        public void TickerDictionaryConversion_DeserializesKeysAndNestedValues()
+        {
+            var response = new ApiResponse
+            {
+                Content = "{\"BTCUSD\":{\"last\":\"100.5\"},\"ETHUSD\":{\"last\":\"20.1\"}}"
+            };
+
+            Dictionary<string, Ticker> tickers = response;
+
+            Assert.Equal("100.5", tickers["BTCUSD"].Last);
+            Assert.Equal("20.1", tickers["ETHUSD"].Last);
         }
 
         [Fact]

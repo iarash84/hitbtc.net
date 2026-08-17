@@ -21,12 +21,13 @@ namespace Hitbtc
     /// <summary>
     /// HitBTC API v3 client. See https://api.hitbtc.com/api/3/explore/.
     /// </summary>
-    public class HitBtcRestApi
+    public class HitBtcRestApi : IDisposable
     {
         private const string Url = "https://api.hitbtc.com";
         private  string _apiKey;
         private  string _secretKey;
         private readonly IRestTransport _transport;
+        private bool _disposed;
 
         public RestTrading Trading { get; set; }
         public RestAccount Account { get; set; }
@@ -61,6 +62,7 @@ namespace Hitbtc
         private async Task<ApiResponse> ExecuteCore(RestRequest request, bool requireAuthentication,
             CancellationToken cancellationToken)
         {
+            ThrowIfDisposed();
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
             if (requireAuthentication && !IsAuthorized)
@@ -117,13 +119,30 @@ namespace Hitbtc
         /// <param name="secretKey">Secret key from the Settings page.</param>
         public void Authorize(string apiKey, string secretKey)
         {
+            ThrowIfDisposed();
             if (string.IsNullOrWhiteSpace(apiKey))
                 throw new ArgumentException("API key cannot be empty.", nameof(apiKey));
             if (string.IsNullOrWhiteSpace(secretKey))
                 throw new ArgumentException("Secret key cannot be empty.", nameof(secretKey));
             _apiKey = apiKey;
             _secretKey = secretKey;
+            _transport.ResetAuthenticatedClient();
             IsAuthorized = true;
+        }
+
+        public void Dispose()
+        {
+            if (_disposed) return;
+            _transport.Dispose();
+            _apiKey = null;
+            _secretKey = null;
+            IsAuthorized = false;
+            _disposed = true;
+        }
+
+        private void ThrowIfDisposed()
+        {
+            if (_disposed) throw new ObjectDisposedException(nameof(HitBtcRestApi));
         }
 
     }

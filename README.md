@@ -92,6 +92,11 @@ var balances = await api.Trading.GetBalance();
 var orders = await api.Trading.GetOrders("BTCUSDT");
 ```
 
+`HitBtcRestApi` implements `IDisposable` and reuses separate public and
+authenticated HTTP clients. Reuse one API instance for related calls and dispose
+it when the application scope ends. Calling `Authorize` with new credentials
+recreates only the authenticated client.
+
 Do not hard-code or commit API credentials. Load them from a secure secret store
 or environment variables. Only grant the API key permissions required by your
 application.
@@ -364,6 +369,8 @@ var orders = await api.Trading.GetOrders("BTCUSDT");
 <div dir="rtl" align="right">
 
 کلیدها را داخل کد یا مخزن قرار ندهید و فقط دسترسی‌های موردنیاز برنامه را برای آن‌ها فعال کنید.
+
+کلاس `HitBtcRestApi` رابط `IDisposable` را پیاده‌سازی می‌کند و HTTP clientهای عمومی و احراز هویت‌شده را جداگانه reuse می‌کند. یک نمونه را برای درخواست‌های مرتبط نگه دارید و در پایان scope آن را dispose کنید. تغییر credential فقط client خصوصی را بازسازی می‌کند.
 
 خطاهای HTTP و خطاهای API با `HitBtcApiException` گزارش می‌شوند. این exception در صورت موجود بودن، وضعیت HTTP و کد خطای صرافی را نیز ارائه می‌دهد و پاسخ نامعتبر را به مدل خالی تبدیل نمی‌کند.
 

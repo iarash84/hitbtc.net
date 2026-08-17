@@ -13,6 +13,7 @@ namespace Hitbtc.HitBtcModel
         public string Timestamp { get; set; }
     }
 
+    [JsonConverter(typeof(OrderBookParameterConverter))]
     public class OrderBookParamter
     {
         [JsonProperty("price")]

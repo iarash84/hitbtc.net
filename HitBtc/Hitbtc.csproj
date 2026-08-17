@@ -80,6 +80,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApiResponse.cs" />
+    <Compile Include="HitBtcApiException.cs" />
     <Compile Include="HitBtcCategories\RestAccount.cs" />
     <Compile Include="HitBtcCategories\SocketMarketData.cs" />
     <Compile Include="HitBtcCategories\RestPublicData.cs" />
@@ -93,6 +94,7 @@
     <Compile Include="HitBtcModel\SocketSymbol.cs" />
     <Compile Include="HitBtcModel\SocketTrade.cs" />
     <Compile Include="HitBtcRestApi.cs" />
+    <Compile Include="RestTransport.cs" />
     <Compile Include="HitBtcSocketApi.cs" />
     <Compile Include="HitBtcModel\Address.cs" />
     <Compile Include="HitBtcModel\Balance.cs" />
@@ -102,6 +104,7 @@
     <Compile Include="HitBtcModel\Fee.cs" />
     <Compile Include="HitBtcModel\Id.cs" />
     <Compile Include="HitBtcModel\Orderbook.cs" />
+    <Compile Include="HitBtcModel\OrderBookParameterConverter.cs" />
     <Compile Include="HitBtcModel\Orders.cs" />
     <Compile Include="HitBtcModel\Symbols.cs" />
     <Compile Include="HitBtcModel\Ticker.cs" />

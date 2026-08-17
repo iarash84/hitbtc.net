@@ -7,7 +7,7 @@ namespace Hitbtc.HitBtcModel
         [JsonProperty("code")]
         public string Code { get; set; }
         [JsonProperty("message")]
-        public int Message { get; set; }
+        public string Message { get; set; }
         [JsonProperty("description")]
         public string Description { get; set; }
         public override string ToString()

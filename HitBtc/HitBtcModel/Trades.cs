@@ -6,8 +6,8 @@ namespace Hitbtc.HitBtcModel
     {
         [JsonProperty("id")]
         public int Id { get; set; }
-        [JsonProperty("orderId")]
-        public int OrderId { get; set; }
+        [JsonProperty("order_id")]
+        public long OrderId { get; set; }
         [JsonProperty("symbol")]
         public string Symbol { get; set; }
         [JsonProperty("side")]
@@ -26,10 +26,13 @@ namespace Hitbtc.HitBtcModel
     {
         [JsonProperty("id")]
         public int Id { get; set; }
-        [JsonProperty("clientOrderId")]
-        public int ClientOrderId { get; set; }
-        [JsonProperty("orderId")]
-        public int OrderId { get; set; }
+        [JsonProperty("client_order_id")]
+        public string ClientOrderId { get; set; }
+        [JsonProperty("order_id")]
+        public long OrderId { get; set; }
+
+        [JsonProperty("taker")]
+        public bool Taker { get; set; }
         [JsonProperty("symbol")]
         public string Symbol { get; set; }
         [JsonProperty("side")]

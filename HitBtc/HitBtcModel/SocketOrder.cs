@@ -27,7 +27,7 @@ namespace Hitbtc.HitBtcModel
     {
         [JsonProperty("id")]
         public string Id { get; set; }
-        [JsonProperty("clientOrderId")]
+        [JsonProperty("client_order_id")]
         public string ClientOrderId { get; set; }
         [JsonProperty("symbol")]
         public string Symbol { get; set; }
@@ -37,19 +37,19 @@ namespace Hitbtc.HitBtcModel
         public string Status { get; set; }
         [JsonProperty("type")]
         public string Type { get; set; }
-        [JsonProperty("timeInForce")]
+        [JsonProperty("time_in_force")]
         public string TimeInForce { get; set; }
         [JsonProperty("quantity")]
         public string Quantity { get; set; }
         [JsonProperty("price")]
         public string Price { get; set; }
-        [JsonProperty("cumQuantity")]
+        [JsonProperty("quantity_cumulative")]
         public string CumQuantity { get; set; }
-        [JsonProperty("createdAt")]
+        [JsonProperty("created_at")]
         public string CreatedAt { get; set; }
-        [JsonProperty("updatedAt")]
+        [JsonProperty("updated_at")]
         public string UpdatedAt { get; set; }
-        [JsonProperty("reportType")]
+        [JsonProperty("report_type")]
         public string ReportType { get; set; }
     }
 
@@ -57,7 +57,7 @@ namespace Hitbtc.HitBtcModel
     {
         [JsonProperty("id")]
         public string Id { get; set; }
-        [JsonProperty("clientOrderId")]
+        [JsonProperty("client_order_id")]
         public string ClientOrderId { get; set; }
         [JsonProperty("symbol")]
         public string Symbol { get; set; }
@@ -67,21 +67,21 @@ namespace Hitbtc.HitBtcModel
         public string Status { get; set; }
         [JsonProperty("type")]
         public string Type { get; set; }
-        [JsonProperty("timeInForce")]
+        [JsonProperty("time_in_force")]
         public string TimeInForce { get; set; }
         [JsonProperty("quantity")]
         public string Quantity { get; set; }
         [JsonProperty("price")]
         public string Price { get; set; }
-        [JsonProperty("cumQuantity")]
+        [JsonProperty("quantity_cumulative")]
         public string CumQuantity { get; set; }
-        [JsonProperty("createdAt")]
+        [JsonProperty("created_at")]
         public string CreatedAt { get; set; }
-        [JsonProperty("updatedAt")]
+        [JsonProperty("updated_at")]
         public string UpdatedAt { get; set; }
-        [JsonProperty("reportType")]
+        [JsonProperty("report_type")]
         public string ReportType { get; set; }
-        [JsonProperty("originalRequestClientOrderId")]
+        [JsonProperty("original_request_client_order_id")]
         public string OriginalRequestClientOrderId { get; set; }
     }
 }

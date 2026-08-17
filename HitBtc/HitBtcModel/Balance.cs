@@ -13,5 +13,11 @@ namespace Hitbtc.HitBtcModel
         [JsonProperty("reserved")]
         public string Reserved { get; set; }
 
+        [JsonProperty("reserved_margin")]
+        public string ReservedMargin { get; set; }
+
+        [JsonProperty("cross_margin_reserved")]
+        public string CrossMarginReserved { get; set; }
+
     }
 }

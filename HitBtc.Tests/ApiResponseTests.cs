@@ -12,7 +12,7 @@ namespace Hitbtc.Tests
         {
             var response = new ApiResponse
             {
-                Content = "{\"id\":\"BTCUSD\",\"baseCurrency\":\"BTC\",\"quoteCurrency\":\"USD\"}"
+                Content = "{\"id\":\"BTCUSD\",\"base_currency\":\"BTC\",\"quote_currency\":\"USD\"}"
             };
 
             Symbol symbol = response;
@@ -91,6 +91,64 @@ namespace Hitbtc.Tests
 
             Assert.Equal("100.5", tickers["BTCUSD"].Last);
             Assert.Equal("20.1", tickers["ETHUSD"].Last);
+        }
+
+        [Fact]
+        public void OrderBookConversion_DeserializesV3PriceSizeArrays()
+        {
+            var response = new ApiResponse
+            {
+                Content = "{\"ask\":[[\"101\",\"0.5\"]],\"bid\":[[\"100\",\"1.25\"]],\"timestamp\":\"2026-01-01T00:00:00.000Z\"}"
+            };
+
+            Orderbook orderbook = response;
+
+            Assert.Equal("101", orderbook.Ask[0].Price);
+            Assert.Equal("0.5", orderbook.Ask[0].Size);
+            Assert.Equal("100", orderbook.Bid[0].Price);
+        }
+
+        [Fact]
+        public void OrderBookConversion_MissingSize_ThrowsJsonSerializationException()
+        {
+            var response = new ApiResponse { Content = "{\"ask\":[[\"101\"]],\"bid\":[]}" };
+
+            Assert.Throws<JsonSerializationException>(() =>
+            {
+                Orderbook orderbook = response;
+            });
+        }
+
+        [Fact]
+        public void V3SnakeCaseFields_AreMappedToModels()
+        {
+            var response = new ApiResponse
+            {
+                Content = "{\"client_order_id\":\"client-1\",\"time_in_force\":\"GTC\",\"quantity_cumulative\":\"0.2\",\"created_at\":\"now\"}"
+            };
+
+            Order order = response;
+
+            Assert.Equal("client-1", order.ClientOrderId);
+            Assert.Equal("GTC", order.TimeInForce);
+            Assert.Equal("0.2", order.CumQuantity);
+            Assert.Equal("now", order.CreatedAt);
+        }
+
+        [Fact]
+        public void CurrencyConversion_MapsV3NetworkAndDecimalPrecision()
+        {
+            var response = new ApiResponse
+            {
+                Content = "{\"full_name\":\"Bitcoin\",\"precision_transfer\":\"0.00000001\",\"networks\":[{\"code\":\"BTC\",\"network_name\":\"Bitcoin\",\"precision_payout\":\"0.00000001\"}]}"
+            };
+
+            Currency currency = response;
+
+            Assert.Equal("Bitcoin", currency.FullName);
+            Assert.Equal("0.00000001", currency.PrecisionTransfer);
+            Assert.Equal("BTC", currency.Networks[0].Code);
+            Assert.Equal("0.00000001", currency.Networks[0].PrecisionPayout);
         }
 
         [Fact]

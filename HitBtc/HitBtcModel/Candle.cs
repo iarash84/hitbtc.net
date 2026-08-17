@@ -14,7 +14,7 @@ namespace Hitbtc.HitBtcModel
         public string Max { get; set; }
         [JsonProperty("volume")]
         public string Volume { get; set; }
-        [JsonProperty("volumeQuote")]
+        [JsonProperty("volume_quote")]
         public string VolumeQuote { get; set; }
         [JsonProperty("timestamp")]
         public string Timestamp { get; set; }

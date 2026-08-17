@@ -69,6 +69,42 @@ namespace Hitbtc.Tests
                 await api.Execute("{\"id\":2}", false);
                 Assert.Equal(1, socket.ConnectCount);
                 Assert.Equal(2, socket.SentMessages.Count);
+                Assert.Equal("wss://api.hitbtc.com/api/3/ws/public", socket.ConnectedUri.ToString());
+            }
+        }
+
+        [Fact]
+        public async Task SubscribeTicker_UsesV3ChannelProtocol()
+        {
+            var socket = new FakeWebSocketClient();
+            socket.EnqueueText("{\"result\":\"ok\",\"id\":7}");
+            using (var api = new HitBtcSocketApi(socket))
+            {
+                await api.MarketData.SubscribeTicker("BTCUSDT", 7);
+
+                var request = socket.SentMessages.Single();
+                Assert.Contains("\"method\":\"subscribe\"", request);
+                Assert.Contains("\"ch\":\"ticker/1s\"", request);
+                Assert.Contains("\"symbols\":[\"BTCUSDT\"]", request);
+            }
+        }
+
+        [Fact]
+        public async Task TradingCommand_UsesTradingEndpointAndSnakeCaseMethod()
+        {
+            var publicSocket = new FakeWebSocketClient();
+            var tradingSocket = new FakeWebSocketClient();
+            tradingSocket.EnqueueText("{\"result\":true}");
+            tradingSocket.EnqueueText("{\"result\":{},\"id\":9}");
+            using (var api = new HitBtcSocketApi(publicSocket, tradingSocket))
+            {
+                api.Authorize("key", "secret");
+                await api.Trading.NewOrder("BTCUSDT", "client-9", "0.01", "100", 9);
+
+                Assert.Equal("wss://api.hitbtc.com/api/3/ws/trading", tradingSocket.ConnectedUri.ToString());
+                Assert.Contains("\"method\":\"spot_new_order\"", tradingSocket.SentMessages.Last());
+                Assert.Contains("\"client_order_id\":\"client-9\"", tradingSocket.SentMessages.Last());
+                Assert.Equal(0, publicSocket.ConnectCount);
             }
         }
 
@@ -96,9 +132,64 @@ namespace Hitbtc.Tests
             using (var api = new HitBtcSocketApi(socket))
             {
                 api.Authorize("key", "secret");
-                var error = await Assert.ThrowsAsync<InvalidOperationException>(() => api.Execute("{}"));
-                Assert.Contains("authentication failed", error.Message);
+                var error = await Assert.ThrowsAsync<HitBtcWebSocketException>(() => api.Execute("{}"));
+                Assert.Contains("invalid", error.Message);
             }
+        }
+
+        [Fact]
+        public async Task Execute_ErrorResponse_ThrowsTypedExceptionWithApiCode()
+        {
+            var socket = new FakeWebSocketClient();
+            socket.EnqueueText("{\"error\":{\"code\":\"2001\",\"message\":\"bad request\"},\"id\":4}");
+            using (var api = new HitBtcSocketApi(socket))
+            {
+                var error = await Assert.ThrowsAsync<HitBtcWebSocketException>(
+                    () => api.Execute("{\"id\":4}", false));
+                Assert.Equal("2001", error.ApiErrorCode);
+                Assert.Contains("bad request", error.Message);
+            }
+        }
+
+        [Fact]
+        public async Task Execute_MalformedResponse_ThrowsTypedException()
+        {
+            var socket = new FakeWebSocketClient();
+            socket.EnqueueText("not-json");
+            using (var api = new HitBtcSocketApi(socket))
+                await Assert.ThrowsAsync<HitBtcWebSocketException>(() => api.Execute("{}", false));
+        }
+
+        [Fact]
+        public async Task Execute_MalformedRequest_ThrowsBeforeConnecting()
+        {
+            var socket = new FakeWebSocketClient();
+            using (var api = new HitBtcSocketApi(socket))
+            {
+                await Assert.ThrowsAsync<ArgumentException>(() => api.Execute("not-json", false));
+                Assert.Equal(0, socket.ConnectCount);
+            }
+        }
+
+        [Fact]
+        public async Task Execute_MismatchedResponseId_ThrowsInsteadOfReturningWrongResponse()
+        {
+            var socket = new FakeWebSocketClient();
+            socket.EnqueueText("{\"result\":true,\"id\":2}");
+            using (var api = new HitBtcSocketApi(socket))
+                await Assert.ThrowsAsync<HitBtcWebSocketException>(
+                    () => api.Execute("{\"id\":1}", false));
+        }
+
+        [Fact]
+        public async Task Execute_MessageOverSafetyLimit_ThrowsWebSocketException()
+        {
+            var socket = new FakeWebSocketClient();
+            var chunk = new string('x', 8192);
+            for (var index = 0; index < 128; index++) socket.EnqueueFragment(chunk, false);
+            socket.EnqueueFragment("x", true);
+            using (var api = new HitBtcSocketApi(socket))
+                await Assert.ThrowsAsync<WebSocketException>(() => api.Execute("{}", false));
         }
 
         [Fact]
@@ -128,6 +219,7 @@ namespace Hitbtc.Tests
             private readonly Queue<Fragment> _fragments = new Queue<Fragment>();
             public WebSocketState State { get; private set; } = WebSocketState.None;
             public int ConnectCount { get; private set; }
+            public Uri ConnectedUri { get; private set; }
             public List<string> SentMessages { get; } = new List<string>();
 
             public void EnqueueText(string text) => Enqueue(text, WebSocketMessageType.Text, true);
@@ -136,12 +228,13 @@ namespace Hitbtc.Tests
                 for (var i = 0; i < parts.Length; i++) Enqueue(parts[i], WebSocketMessageType.Text, i == parts.Length - 1);
             }
             public void EnqueueClose() => Enqueue("", WebSocketMessageType.Close, true);
+            public void EnqueueFragment(string text, bool end) => Enqueue(text, WebSocketMessageType.Text, end);
             private void Enqueue(string text, WebSocketMessageType type, bool end) =>
                 _fragments.Enqueue(new Fragment(Encoding.UTF8.GetBytes(text), type, end));
 
             public Task ConnectAsync(Uri uri, CancellationToken token)
             {
-                token.ThrowIfCancellationRequested(); ConnectCount++; State = WebSocketState.Open; return Task.CompletedTask;
+                token.ThrowIfCancellationRequested(); ConnectCount++; ConnectedUri = uri; State = WebSocketState.Open; return Task.CompletedTask;
             }
             public Task SendAsync(ArraySegment<byte> buffer, WebSocketMessageType type, bool end, CancellationToken token)
             {

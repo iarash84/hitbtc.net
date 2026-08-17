@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Hitbtc")]
-[assembly: AssemblyDescription("Unofficial .NET Framework client for HitBTC API v3")]
+[assembly: AssemblyDescription("Unofficial .NET client for HitBTC API v3")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Hitbtc")]

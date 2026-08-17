@@ -1,7 +1,7 @@
 # HitBTC.Net
 
 A C# client library for the HitBTC API v3 REST and WebSocket interfaces. The library targets
-.NET Framework 4.8 and provides typed clients for public market data, account
+.NET Framework 4.8 and .NET 8.0 and provides typed clients for public market data, account
 operations, trading, trading history, and JSON-RPC WebSocket operations.
 
 > The client has migrated from the deprecated API v2 contract to API v3. Existing
@@ -14,7 +14,7 @@ operations, trading, trading history, and JSON-RPC WebSocket operations.
 
 | Path | Purpose |
 | --- | --- |
-| `HitBtc/` | The .NET Framework 4.8 class library that produces `Hitbtc.dll` |
+| `HitBtc/` | The multi-targeted `net48`/`net8.0` class library that produces `Hitbtc.dll` |
 | `HitBtc/HitBtcCategories/` | REST and WebSocket API operation groups |
 | `HitBtc/HitBtcModel/` | Request and response models |
 | `HitBtc.Tests/` | Deterministic xUnit tests that do not use the live HitBTC service |
@@ -26,8 +26,8 @@ The `Test` project is a demo application, not the automated test suite. CI uses
 
 ## Requirements
 
-- Windows with the .NET Framework 4.8 Developer Pack
-- Visual Studio 2022, or a compatible .NET SDK and NuGet CLI
+- Windows with the .NET Framework 4.8 Developer Pack for legacy builds
+- .NET 8 SDK or newer and Visual Studio 2022
 - Git, when contributing or creating a release
 
 ## Restore, build, and test
@@ -58,7 +58,8 @@ dotnet test HitBtc.Tests/HitBtc.Tests.csproj `
 The Release library is generated at:
 
 ```text
-HitBtc/bin/Release/Hitbtc.dll
+HitBtc/bin/Release/net48/Hitbtc.dll
+HitBtc/bin/Release/net8.0/Hitbtc.dll
 ```
 
 The DLL depends on the other assemblies copied into the same output directory.
@@ -299,7 +300,7 @@ provided without warranty.
 
 # HitBTC.Net — راهنمای فارسی
 
-کتابخانه‌ای برای استفاده از رابط‌های REST و WebSocket نسخه ۳ صرافی HitBTC در زبان C# است. این پروژه بر پایهٔ .NET Framework 4.8 ساخته شده و برای دریافت اطلاعات عمومی بازار، مدیریت کیف پول، معاملات اسپات و تاریخچهٔ معاملات، مدل‌ها و کلاینت‌های نوع‌دار ارائه می‌دهد.
+کتابخانه‌ای برای استفاده از رابط‌های REST و WebSocket نسخه ۳ صرافی HitBTC در زبان C# است. این پروژه به‌صورت multi-target برای .NET Framework 4.8 و .NET 8.0 ساخته شده و برای دریافت اطلاعات عمومی بازار، مدیریت کیف پول، معاملات اسپات و تاریخچهٔ معاملات، مدل‌ها و کلاینت‌های نوع‌دار ارائه می‌دهد.
 
 > این کتابخانه رسمی HitBTC نیست. پیش از استفاده از قابلیت‌های معامله یا برداشت روی حساب دارای موجودی، آن‌ها را با دقت بررسی کنید.
 
@@ -307,7 +308,7 @@ provided without warranty.
 
 | مسیر | کاربرد |
 | --- | --- |
-| `HitBtc/` | کتابخانهٔ اصلی که فایل `Hitbtc.dll` را تولید می‌کند |
+| `HitBtc/` | کتابخانهٔ اصلی multi-target برای `net48` و `net8.0` |
 | `HitBtc/HitBtcCategories/` | گروه‌های عملیاتی REST و WebSocket |
 | `HitBtc/HitBtcModel/` | مدل‌های درخواست و پاسخ |
 | `HitBtc.Tests/` | تست‌های خودکار و مستقل از سرویس زنده |
@@ -318,8 +319,8 @@ provided without warranty.
 
 ## پیش‌نیازها
 
-- ویندوز و بستهٔ توسعهٔ .NET Framework 4.8
-- Visual Studio 2022 یا یک نسخهٔ سازگار از .NET SDK و NuGet CLI
+- بستهٔ توسعهٔ .NET Framework 4.8 برای خروجی قدیمی
+- .NET 8 SDK یا جدیدتر و Visual Studio 2022
 - Git برای مشارکت و ساخت نسخهٔ انتشار
 
 ## بازیابی وابستگی‌ها، بیلد و تست
@@ -336,7 +337,7 @@ dotnet test HitBtc.Tests/HitBtc.Tests.csproj --configuration Release --no-build 
 
 <div dir="rtl" align="right">
 
-فایل DLL نسخهٔ Release در مسیر `HitBtc/bin/Release/Hitbtc.dll` ساخته می‌شود. هنگام توزیع دستی، وابستگی‌های موجود در پوشهٔ خروجی را نیز همراه آن منتشر کنید.
+فایل‌های DLL نسخهٔ Release در مسیرهای `HitBtc/bin/Release/net48/Hitbtc.dll` و `HitBtc/bin/Release/net8.0/Hitbtc.dll` ساخته می‌شوند. هنگام توزیع دستی، وابستگی‌های موجود در پوشهٔ خروجی target موردنظر را نیز همراه آن منتشر کنید.
 
 ## استفاده از REST API
 

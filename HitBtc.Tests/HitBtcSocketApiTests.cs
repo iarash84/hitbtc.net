@@ -53,7 +53,7 @@ namespace Hitbtc.Tests
             {
                 var response = await api.Execute("{}", false);
                 Assert.Equal("{\"result\":\"سلام\"}", response.Content);
-                Assert.DoesNotContain("\0", response.Content);
+                Assert.Equal(-1, response.Content.IndexOf('\0'));
             }
         }
 

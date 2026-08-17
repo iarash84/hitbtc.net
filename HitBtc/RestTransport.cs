@@ -15,8 +15,8 @@ namespace Hitbtc
     internal sealed class RestSharpTransport : IRestTransport
     {
         private readonly object _sync = new object();
-        private RestClient _publicClient;
-        private RestClient _authenticatedClient;
+        private RestClient? _publicClient;
+        private RestClient? _authenticatedClient;
         private bool _disposed;
 
         public async Task<RestResponse> ExecuteAsync(RestRequest request, RestClientOptions options,

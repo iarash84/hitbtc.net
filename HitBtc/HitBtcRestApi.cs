@@ -5,6 +5,7 @@ using Hitbtc.HitBtcCategories;
 using RestSharp;
 using RestSharp.Authenticators;
 using Newtonsoft.Json.Linq;
+using System.Globalization;
 
 namespace Hitbtc
 {
@@ -24,8 +25,8 @@ namespace Hitbtc
     public class HitBtcRestApi : IDisposable
     {
         private const string Url = "https://api.hitbtc.com";
-        private  string _apiKey;
-        private  string _secretKey;
+        private string? _apiKey;
+        private string? _secretKey;
         private readonly IRestTransport _transport;
         private bool _disposed;
 
@@ -71,7 +72,7 @@ namespace Hitbtc
             var options = new RestClientOptions(Url);
 
             if (requireAuthentication)
-                options.Authenticator = new HttpBasicAuthenticator(_apiKey, _secretKey);
+                options.Authenticator = new HttpBasicAuthenticator(_apiKey!, _secretKey!);
 
             var response = await _transport.ExecuteAsync(request, options, cancellationToken)
                 .ConfigureAwait(false);
@@ -80,9 +81,11 @@ namespace Hitbtc
             {
                 var apiError = TryReadApiError(response.Content);
                 var message = apiError == null
-                    ? string.Format("HitBTC request failed with HTTP status {0} ({1}).",
+                    ? string.Format(CultureInfo.InvariantCulture,
+                        "HitBTC request failed with HTTP status {0} ({1}).",
                         (int)response.StatusCode, response.StatusDescription)
-                    : string.Format("HitBTC request failed: {0}", apiError.Value.Message);
+                    : string.Format(CultureInfo.InvariantCulture, "HitBTC request failed: {0}",
+                        apiError.Value.Message);
                 throw new HitBtcApiException(message, response.StatusCode,
                     apiError?.Code, response.ErrorException);
             }
@@ -95,7 +98,7 @@ namespace Hitbtc
         /// </summary>
         public bool IsAuthorized { get; private set; }
 
-        private static (string Code, string Message)? TryReadApiError(string content)
+        private static (string? Code, string Message)? TryReadApiError(string? content)
         {
             if (string.IsNullOrWhiteSpace(content)) return null;
             try
@@ -138,6 +141,7 @@ namespace Hitbtc
             _secretKey = null;
             IsAuthorized = false;
             _disposed = true;
+            GC.SuppressFinalize(this);
         }
 
         private void ThrowIfDisposed()

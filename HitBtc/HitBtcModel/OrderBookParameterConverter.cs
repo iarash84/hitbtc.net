@@ -2,6 +2,7 @@ using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
+#nullable disable
 namespace Hitbtc.HitBtcModel
 {
     internal sealed class OrderBookParameterConverter : JsonConverter

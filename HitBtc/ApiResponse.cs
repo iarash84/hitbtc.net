@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Hitbtc.HitBtcModel;
 
+#nullable disable
 namespace Hitbtc
 {
     public class ApiResponse

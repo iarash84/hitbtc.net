@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 
+#nullable disable
 namespace Hitbtc.HitBtcModel
 {
     public class Candle

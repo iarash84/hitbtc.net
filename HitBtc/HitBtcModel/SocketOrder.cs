@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
+#nullable disable
 namespace Hitbtc.HitBtcModel
 {
     public class SocketOrder

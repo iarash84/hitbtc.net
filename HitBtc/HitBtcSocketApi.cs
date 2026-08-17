@@ -21,8 +21,8 @@ namespace Hitbtc
         private readonly IWebSocketClient _tradingSocket;
         private readonly SemaphoreSlim _publicLock = new SemaphoreSlim(1, 1);
         private readonly SemaphoreSlim _tradingLock = new SemaphoreSlim(1, 1);
-        private string _apiKey;
-        private string _secretKey;
+        private string? _apiKey;
+        private string? _secretKey;
         private bool _connectionAuthenticated;
         private bool _disposed;
         private readonly WebSocketReconnectOptions _reconnectOptions;
@@ -34,8 +34,8 @@ namespace Hitbtc
         public bool IsAuthorized { get; private set; }
 
         /// <summary>Raised for every message read by <see cref="ListenForNotificationsAsync"/>.</summary>
-        public event EventHandler<HitBtcNotificationEventArgs> NotificationReceived;
-        public event EventHandler<HitBtcReconnectingEventArgs> Reconnecting;
+        public event EventHandler<HitBtcNotificationEventArgs>? NotificationReceived;
+        public event EventHandler<HitBtcReconnectingEventArgs>? Reconnecting;
 
         public HitBtcSocketApi() : this(new WebSocketReconnectOptions()) { }
 
@@ -214,8 +214,9 @@ namespace Hitbtc
             var request = JObject.Parse(requestContent);
             var method = request.Value<string>("method");
             if (method != "subscribe" && method != "unsubscribe") return;
+            var parameters = request["params"];
             var key = (request.Value<string>("ch") ?? string.Empty) + "|" +
-                (request["params"] == null ? string.Empty : request["params"].ToString(Newtonsoft.Json.Formatting.None));
+                (parameters == null ? string.Empty : parameters.ToString(Newtonsoft.Json.Formatting.None));
             var subscriptions = authenticated ? _tradingSubscriptions : _publicSubscriptions;
             if (method == "subscribe") subscriptions[key] = requestContent;
             else subscriptions.Remove(key);
@@ -229,8 +230,8 @@ namespace Hitbtc
                 ["params"] = new JObject
                 {
                     ["algo"] = "BASIC",
-                    ["pKey"] = _apiKey,
-                    ["sKey"] = _secretKey
+                    ["pKey"] = _apiKey!,
+                    ["sKey"] = _secretKey!
                 }
             }.ToString(Newtonsoft.Json.Formatting.None);
 
@@ -244,8 +245,9 @@ namespace Hitbtc
             {
                 throw new HitBtcWebSocketException("HitBTC returned malformed authentication JSON.", null, exception);
             }
-            if (response["error"] != null || response["result"] == null ||
-                response["result"].Type == JTokenType.Boolean && !response["result"].Value<bool>())
+            var result = response["result"];
+            if (response["error"] != null || result == null ||
+                result.Type == JTokenType.Boolean && !result.Value<bool>())
                 throw CreateWebSocketError(response, "HitBTC WebSocket authentication failed.");
             _connectionAuthenticated = true;
         }
@@ -354,6 +356,7 @@ namespace Hitbtc
             _publicLock.Dispose();
             _tradingLock.Dispose();
             _disposed = true;
+            GC.SuppressFinalize(this);
         }
 
         private void ThrowIfDisposed()

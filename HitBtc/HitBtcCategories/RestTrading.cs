@@ -23,7 +23,7 @@ namespace Hitbtc.HitBtcCategories
             return await _api.Execute(request);
         }
 
-        public async Task<List<Order>> GetOrders(string symbolName = null)
+        public async Task<List<Order>> GetOrders(string? symbolName = null)
         {
             var request = new RestRequest("/api/3/spot/order", Method.Get);
             AddOptionalQuery(request, "symbol", symbolName);
@@ -34,8 +34,8 @@ namespace Hitbtc.HitBtcCategories
             PublicEnum.EnTradingSide side = PublicEnum.EnTradingSide.buy,
             PublicEnum.EnTradingType type = PublicEnum.EnTradingType.limit,
             PublicEnum.EnTradingTimeInForce timeInForce = PublicEnum.EnTradingTimeInForce.GTC,
-            string price = null, string stopPrice = null, string expireTime = null,
-            string clientOrderId = null, bool strictValidate = false)
+            string? price = null, string? stopPrice = null, string? expireTime = null,
+            string? clientOrderId = null, bool strictValidate = false)
         {
             var request = CreateOrderRequest("/api/3/spot/order", Method.Post, symbolName, quantity,
                 side, type, timeInForce, price, stopPrice, expireTime, strictValidate);
@@ -43,7 +43,7 @@ namespace Hitbtc.HitBtcCategories
             return await _api.Execute(request);
         }
 
-        public async Task<List<Order>> DeleteOrders(string symbolName = null)
+        public async Task<List<Order>> DeleteOrders(string? symbolName = null)
         {
             var request = new RestRequest("/api/3/spot/order", Method.Delete);
             AddOptionalQuery(request, "symbol", symbolName);
@@ -59,7 +59,7 @@ namespace Hitbtc.HitBtcCategories
             PublicEnum.EnTradingSide side = PublicEnum.EnTradingSide.buy,
             PublicEnum.EnTradingType type = PublicEnum.EnTradingType.limit,
             PublicEnum.EnTradingTimeInForce timeInForce = PublicEnum.EnTradingTimeInForce.GTC,
-            string price = null, string stopPrice = null, string expireTime = null,
+            string? price = null, string? stopPrice = null, string? expireTime = null,
             bool strictValidate = false)
         {
             var request = CreateOrderRequest("/api/3/spot/order/{clientOrderId}", Method.Put, symbolName,
@@ -74,7 +74,7 @@ namespace Hitbtc.HitBtcCategories
         }
 
         public async Task<Order> PatchOrder(string clientOrderId, string quantity,
-            string requestClientId, string price = null)
+            string requestClientId, string? price = null)
         {
             var request = OrderRequest(clientOrderId, Method.Patch);
             AddOptionalBody(request, "quantity", quantity);
@@ -85,8 +85,8 @@ namespace Hitbtc.HitBtcCategories
 
         private static RestRequest CreateOrderRequest(string resource, Method method, string symbol,
             string quantity, PublicEnum.EnTradingSide side, PublicEnum.EnTradingType type,
-            PublicEnum.EnTradingTimeInForce timeInForce, string price, string stopPrice,
-            string expireTime, bool strictValidate)
+            PublicEnum.EnTradingTimeInForce timeInForce, string? price, string? stopPrice,
+            string? expireTime, bool strictValidate)
         {
             var request = new RestRequest(resource, method);
             request.AddParameter("symbol", symbol);
@@ -118,12 +118,12 @@ namespace Hitbtc.HitBtcCategories
             }
         }
 
-        private static void AddOptionalBody(RestRequest request, string name, string value)
+        private static void AddOptionalBody(RestRequest request, string name, string? value)
         {
             if (!string.IsNullOrWhiteSpace(value)) request.AddParameter(name, value);
         }
 
-        private static void AddOptionalQuery(RestRequest request, string name, string value)
+        private static void AddOptionalQuery(RestRequest request, string name, string? value)
         {
             if (!string.IsNullOrWhiteSpace(value)) request.AddQueryParameter(name, value);
         }

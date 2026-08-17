@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using Newtonsoft.Json;
 
+#nullable disable
 namespace Hitbtc.HitBtcModel
 {
     public class Ticker

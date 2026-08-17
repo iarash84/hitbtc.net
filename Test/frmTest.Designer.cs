@@ -1,142 +1,375 @@
-﻿namespace Test
+namespace Test
 {
     partial class frmTest
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
+            if (disposing && components != null) components.Dispose();
             base.Dispose(disposing);
         }
 
-        #region Windows Form Designer generated code
-
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
         private void InitializeComponent()
         {
-            this.btnPublicTest = new System.Windows.Forms.Button();
-            this.btnTradingTest = new System.Windows.Forms.Button();
+            this.headerPanel = new System.Windows.Forms.Panel();
+            this.lblSubtitle = new System.Windows.Forms.Label();
+            this.lblTitle = new System.Windows.Forms.Label();
+            this.settingsPanel = new System.Windows.Forms.TableLayoutPanel();
+            this.lblSymbol = new System.Windows.Forms.Label();
+            this.txtSymbol = new System.Windows.Forms.TextBox();
+            this.lblApiKey = new System.Windows.Forms.Label();
+            this.txtApiKey = new System.Windows.Forms.TextBox();
+            this.lblSecret = new System.Windows.Forms.Label();
+            this.txtSecret = new System.Windows.Forms.TextBox();
+            this.chkShowSecret = new System.Windows.Forms.CheckBox();
+            this.btnLoadEnvironment = new System.Windows.Forms.Button();
+            this.actionsPanel = new System.Windows.Forms.TableLayoutPanel();
+            this.grpPublicRest = new System.Windows.Forms.GroupBox();
+            this.publicButtons = new System.Windows.Forms.FlowLayoutPanel();
+            this.btnTicker = new System.Windows.Forms.Button();
+            this.btnSymbols = new System.Windows.Forms.Button();
+            this.btnCurrencies = new System.Windows.Forms.Button();
+            this.btnOrderBook = new System.Windows.Forms.Button();
+            this.btnCandles = new System.Windows.Forms.Button();
+            this.grpPrivateRest = new System.Windows.Forms.GroupBox();
+            this.privateButtons = new System.Windows.Forms.FlowLayoutPanel();
+            this.btnSpotBalance = new System.Windows.Forms.Button();
+            this.btnActiveOrders = new System.Windows.Forms.Button();
             this.btnTradingHistory = new System.Windows.Forms.Button();
-            this.btnAccount = new System.Windows.Forms.Button();
-            this.btnMarketData = new System.Windows.Forms.Button();
-            this.btnSocketTrading = new System.Windows.Forms.Button();
-            this.gridviewReponse = new System.Windows.Forms.DataGridView();
-            ((System.ComponentModel.ISupportInitialize)(this.gridviewReponse)).BeginInit();
+            this.btnWalletBalance = new System.Windows.Forms.Button();
+            this.grpWebSocket = new System.Windows.Forms.GroupBox();
+            this.socketButtons = new System.Windows.Forms.FlowLayoutPanel();
+            this.btnSubscribeTicker = new System.Windows.Forms.Button();
+            this.btnSocketBalance = new System.Windows.Forms.Button();
+            this.contentSplit = new System.Windows.Forms.SplitContainer();
+            this.resultPanel = new System.Windows.Forms.Panel();
+            this.gridResults = new System.Windows.Forms.DataGridView();
+            this.resultHeader = new System.Windows.Forms.Panel();
+            this.lblResultCount = new System.Windows.Forms.Label();
+            this.lblResults = new System.Windows.Forms.Label();
+            this.logPanel = new System.Windows.Forms.Panel();
+            this.txtLog = new System.Windows.Forms.RichTextBox();
+            this.logHeader = new System.Windows.Forms.Panel();
+            this.btnClearLog = new System.Windows.Forms.Button();
+            this.lblLog = new System.Windows.Forms.Label();
+            this.statusStrip = new System.Windows.Forms.StatusStrip();
+            this.lblStatus = new System.Windows.Forms.ToolStripStatusLabel();
+            this.lblSpacer = new System.Windows.Forms.ToolStripStatusLabel();
+            this.lblVersion = new System.Windows.Forms.ToolStripStatusLabel();
+            this.headerPanel.SuspendLayout();
+            this.settingsPanel.SuspendLayout();
+            this.actionsPanel.SuspendLayout();
+            this.grpPublicRest.SuspendLayout();
+            this.publicButtons.SuspendLayout();
+            this.grpPrivateRest.SuspendLayout();
+            this.privateButtons.SuspendLayout();
+            this.grpWebSocket.SuspendLayout();
+            this.socketButtons.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.contentSplit)).BeginInit();
+            this.contentSplit.Panel1.SuspendLayout();
+            this.contentSplit.Panel2.SuspendLayout();
+            this.contentSplit.SuspendLayout();
+            this.resultPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.gridResults)).BeginInit();
+            this.resultHeader.SuspendLayout();
+            this.logPanel.SuspendLayout();
+            this.logHeader.SuspendLayout();
+            this.statusStrip.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // btnPublicTest
-            // 
-            this.btnPublicTest.Location = new System.Drawing.Point(12, 22);
-            this.btnPublicTest.Name = "btnPublicTest";
-            this.btnPublicTest.Size = new System.Drawing.Size(75, 23);
-            this.btnPublicTest.TabIndex = 0;
-            this.btnPublicTest.Text = "Public Test";
-            this.btnPublicTest.UseVisualStyleBackColor = true;
-            this.btnPublicTest.Click += new System.EventHandler(this.btnPublicTest_Click);
-            // 
-            // btnTradingTest
-            // 
-            this.btnTradingTest.Location = new System.Drawing.Point(93, 22);
-            this.btnTradingTest.Name = "btnTradingTest";
-            this.btnTradingTest.Size = new System.Drawing.Size(75, 23);
-            this.btnTradingTest.TabIndex = 2;
-            this.btnTradingTest.Text = "Trading Test";
-            this.btnTradingTest.UseVisualStyleBackColor = true;
-            this.btnTradingTest.Click += new System.EventHandler(this.btnTradingTest_Click);
-            // 
-            // btnTradingHistory
-            // 
-            this.btnTradingHistory.Location = new System.Drawing.Point(174, 22);
-            this.btnTradingHistory.Name = "btnTradingHistory";
-            this.btnTradingHistory.Size = new System.Drawing.Size(106, 23);
-            this.btnTradingHistory.TabIndex = 3;
-            this.btnTradingHistory.Text = "Trading History";
-            this.btnTradingHistory.UseVisualStyleBackColor = true;
-            this.btnTradingHistory.Click += new System.EventHandler(this.btnTradingHistory_Click);
-            // 
-            // btnAccount
-            // 
-            this.btnAccount.Location = new System.Drawing.Point(286, 22);
-            this.btnAccount.Name = "btnAccount";
-            this.btnAccount.Size = new System.Drawing.Size(106, 23);
-            this.btnAccount.TabIndex = 4;
-            this.btnAccount.Text = "Account";
-            this.btnAccount.UseVisualStyleBackColor = true;
-            this.btnAccount.Click += new System.EventHandler(this.btnAccount_Click);
-            // 
-            // btnMarketData
-            // 
-            this.btnMarketData.Location = new System.Drawing.Point(12, 51);
-            this.btnMarketData.Name = "btnMarketData";
-            this.btnMarketData.Size = new System.Drawing.Size(156, 23);
-            this.btnMarketData.TabIndex = 5;
-            this.btnMarketData.Text = "socket MarketData";
-            this.btnMarketData.UseVisualStyleBackColor = true;
-            this.btnMarketData.Click += new System.EventHandler(this.btnMarketData_Click);
-            // 
-            // btnSocketTrading
-            // 
-            this.btnSocketTrading.Location = new System.Drawing.Point(174, 51);
-            this.btnSocketTrading.Name = "btnSocketTrading";
-            this.btnSocketTrading.Size = new System.Drawing.Size(156, 23);
-            this.btnSocketTrading.TabIndex = 6;
-            this.btnSocketTrading.Text = "socket Trading";
-            this.btnSocketTrading.UseVisualStyleBackColor = true;
-            this.btnSocketTrading.Click += new System.EventHandler(this.btnSocketTrading_Click);
-            // 
-            // gridviewReponse
-            // 
-            this.gridviewReponse.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.gridviewReponse.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.gridviewReponse.Location = new System.Drawing.Point(12, 80);
-            this.gridviewReponse.Name = "gridviewReponse";
-            this.gridviewReponse.Size = new System.Drawing.Size(540, 175);
-            this.gridviewReponse.TabIndex = 7;
-            // 
-            // frmTest
-            // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            // headerPanel
+            this.headerPanel.BackColor = System.Drawing.Color.FromArgb(24, 35, 54);
+            this.headerPanel.Controls.Add(this.lblSubtitle);
+            this.headerPanel.Controls.Add(this.lblTitle);
+            this.headerPanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.headerPanel.Height = 78;
+            // lblTitle
+            this.lblTitle.AutoSize = true;
+            this.lblTitle.Font = new System.Drawing.Font("Segoe UI Semibold", 20F);
+            this.lblTitle.ForeColor = System.Drawing.Color.White;
+            this.lblTitle.Location = new System.Drawing.Point(20, 10);
+            this.lblTitle.Text = "HitBTC.Net  •  API v3 Test Console";
+            // lblSubtitle
+            this.lblSubtitle.AutoSize = true;
+            this.lblSubtitle.Font = new System.Drawing.Font("Segoe UI", 9.5F);
+            this.lblSubtitle.ForeColor = System.Drawing.Color.FromArgb(176, 190, 210);
+            this.lblSubtitle.Location = new System.Drawing.Point(23, 49);
+            this.lblSubtitle.Text = "Read-only manual verification for REST and WebSocket endpoints  |  ابزار تست دستی و فقط‌خواندنی";
+            // settingsPanel
+            this.settingsPanel.BackColor = System.Drawing.Color.White;
+            this.settingsPanel.ColumnCount = 8;
+            this.settingsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.AutoSize));
+            this.settingsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 130F));
+            this.settingsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.AutoSize));
+            this.settingsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 45F));
+            this.settingsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.AutoSize));
+            this.settingsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 45F));
+            this.settingsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.AutoSize));
+            this.settingsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.AutoSize));
+            this.settingsPanel.Controls.Add(this.lblSymbol, 0, 0);
+            this.settingsPanel.Controls.Add(this.txtSymbol, 1, 0);
+            this.settingsPanel.Controls.Add(this.lblApiKey, 2, 0);
+            this.settingsPanel.Controls.Add(this.txtApiKey, 3, 0);
+            this.settingsPanel.Controls.Add(this.lblSecret, 4, 0);
+            this.settingsPanel.Controls.Add(this.txtSecret, 5, 0);
+            this.settingsPanel.Controls.Add(this.chkShowSecret, 6, 0);
+            this.settingsPanel.Controls.Add(this.btnLoadEnvironment, 7, 0);
+            this.settingsPanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.settingsPanel.Height = 58;
+            this.settingsPanel.Padding = new System.Windows.Forms.Padding(16, 12, 16, 8);
+            // labels and inputs
+            this.lblSymbol.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.lblSymbol.AutoSize = true;
+            this.lblSymbol.Text = "Symbol";
+            this.lblSymbol.Margin = new System.Windows.Forms.Padding(4, 0, 8, 0);
+            this.txtSymbol.Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            this.txtSymbol.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
+            this.txtSymbol.Text = "BTCUSDT";
+            this.lblApiKey.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.lblApiKey.AutoSize = true;
+            this.lblApiKey.Text = "API key";
+            this.lblApiKey.Margin = new System.Windows.Forms.Padding(14, 0, 8, 0);
+            this.txtApiKey.Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            this.txtApiKey.UseSystemPasswordChar = true;
+            this.lblSecret.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.lblSecret.AutoSize = true;
+            this.lblSecret.Text = "Secret";
+            this.lblSecret.Margin = new System.Windows.Forms.Padding(14, 0, 8, 0);
+            this.txtSecret.Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            this.txtSecret.UseSystemPasswordChar = true;
+            this.chkShowSecret.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.chkShowSecret.AutoSize = true;
+            this.chkShowSecret.Text = "Show";
+            this.chkShowSecret.Margin = new System.Windows.Forms.Padding(10, 0, 10, 0);
+            this.chkShowSecret.CheckedChanged += new System.EventHandler(this.chkShowSecret_CheckedChanged);
+            this.btnLoadEnvironment.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.btnLoadEnvironment.AutoSize = true;
+            this.btnLoadEnvironment.Text = "Load environment";
+            this.btnLoadEnvironment.Click += new System.EventHandler(this.btnLoadEnvironment_Click);
+            // actionsPanel
+            this.actionsPanel.BackColor = System.Drawing.Color.FromArgb(244, 247, 251);
+            this.actionsPanel.ColumnCount = 3;
+            this.actionsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 40F));
+            this.actionsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 35F));
+            this.actionsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.actionsPanel.Controls.Add(this.grpPublicRest, 0, 0);
+            this.actionsPanel.Controls.Add(this.grpPrivateRest, 1, 0);
+            this.actionsPanel.Controls.Add(this.grpWebSocket, 2, 0);
+            this.actionsPanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.actionsPanel.Height = 126;
+            this.actionsPanel.Padding = new System.Windows.Forms.Padding(12, 4, 12, 8);
+            // groups
+            this.grpPublicRest.Controls.Add(this.publicButtons);
+            this.grpPublicRest.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grpPublicRest.Text = "Public REST  •  بدون کلید";
+            this.grpPublicRest.Margin = new System.Windows.Forms.Padding(4);
+            this.publicButtons.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.publicButtons.Padding = new System.Windows.Forms.Padding(5, 8, 5, 5);
+            this.publicButtons.Controls.Add(this.btnTicker);
+            this.publicButtons.Controls.Add(this.btnSymbols);
+            this.publicButtons.Controls.Add(this.btnCurrencies);
+            this.publicButtons.Controls.Add(this.btnOrderBook);
+            this.publicButtons.Controls.Add(this.btnCandles);
+            this.grpPrivateRest.Controls.Add(this.privateButtons);
+            this.grpPrivateRest.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grpPrivateRest.Text = "Private REST  •  نیازمند کلید";
+            this.grpPrivateRest.Margin = new System.Windows.Forms.Padding(4);
+            this.privateButtons.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.privateButtons.Padding = new System.Windows.Forms.Padding(5, 8, 5, 5);
+            this.privateButtons.Controls.Add(this.btnSpotBalance);
+            this.privateButtons.Controls.Add(this.btnActiveOrders);
+            this.privateButtons.Controls.Add(this.btnTradingHistory);
+            this.privateButtons.Controls.Add(this.btnWalletBalance);
+            this.grpWebSocket.Controls.Add(this.socketButtons);
+            this.grpWebSocket.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grpWebSocket.Text = "WebSocket v3";
+            this.grpWebSocket.Margin = new System.Windows.Forms.Padding(4);
+            this.socketButtons.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.socketButtons.Padding = new System.Windows.Forms.Padding(5, 8, 5, 5);
+            this.socketButtons.Controls.Add(this.btnSubscribeTicker);
+            this.socketButtons.Controls.Add(this.btnSocketBalance);
+            // buttons
+            ConfigureActionButton(this.btnTicker, "Ticker", this.btnTicker_Click);
+            ConfigureActionButton(this.btnSymbols, "Symbols", this.btnSymbols_Click);
+            ConfigureActionButton(this.btnCurrencies, "Currencies", this.btnCurrencies_Click);
+            ConfigureActionButton(this.btnOrderBook, "Order book", this.btnOrderBook_Click);
+            ConfigureActionButton(this.btnCandles, "Candles", this.btnCandles_Click);
+            ConfigureActionButton(this.btnSpotBalance, "Spot balance", this.btnSpotBalance_Click);
+            ConfigureActionButton(this.btnActiveOrders, "Active orders", this.btnActiveOrders_Click);
+            ConfigureActionButton(this.btnTradingHistory, "Trade history", this.btnTradingHistory_Click);
+            ConfigureActionButton(this.btnWalletBalance, "Wallet balance", this.btnWalletBalance_Click);
+            ConfigureActionButton(this.btnSubscribeTicker, "Subscribe ticker", this.btnSubscribeTicker_Click);
+            ConfigureActionButton(this.btnSocketBalance, "Trading balance", this.btnSocketBalance_Click);
+            // contentSplit
+            this.contentSplit.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.contentSplit.Location = new System.Drawing.Point(0, 262);
+            this.contentSplit.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.contentSplit.Panel1.Controls.Add(this.resultPanel);
+            this.contentSplit.Panel2.Controls.Add(this.logPanel);
+            this.contentSplit.SplitterDistance = 285;
+            this.contentSplit.SplitterWidth = 6;
+            // results
+            this.resultPanel.Controls.Add(this.gridResults);
+            this.resultPanel.Controls.Add(this.resultHeader);
+            this.resultPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.gridResults.AllowUserToAddRows = false;
+            this.gridResults.AllowUserToDeleteRows = false;
+            this.gridResults.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.DisplayedCells;
+            this.gridResults.BackgroundColor = System.Drawing.Color.White;
+            this.gridResults.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.gridResults.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.gridResults.ReadOnly = true;
+            this.gridResults.RowHeadersVisible = false;
+            this.gridResults.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.resultHeader.BackColor = System.Drawing.Color.White;
+            this.resultHeader.Controls.Add(this.lblResultCount);
+            this.resultHeader.Controls.Add(this.lblResults);
+            this.resultHeader.Dock = System.Windows.Forms.DockStyle.Top;
+            this.resultHeader.Height = 38;
+            this.lblResults.AutoSize = true;
+            this.lblResults.Font = new System.Drawing.Font("Segoe UI Semibold", 11F);
+            this.lblResults.Location = new System.Drawing.Point(14, 9);
+            this.lblResults.Text = "Results  •  نتایج";
+            this.lblResultCount.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            this.lblResultCount.AutoSize = true;
+            this.lblResultCount.ForeColor = System.Drawing.Color.DimGray;
+            this.lblResultCount.Location = new System.Drawing.Point(1090, 12);
+            this.lblResultCount.Text = "0 rows";
+            // log
+            this.logPanel.Controls.Add(this.txtLog);
+            this.logPanel.Controls.Add(this.logHeader);
+            this.logPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtLog.BackColor = System.Drawing.Color.FromArgb(17, 24, 39);
+            this.txtLog.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtLog.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtLog.Font = new System.Drawing.Font("Consolas", 9.5F);
+            this.txtLog.ForeColor = System.Drawing.Color.FromArgb(209, 213, 219);
+            this.txtLog.ReadOnly = true;
+            this.txtLog.WordWrap = false;
+            this.logHeader.BackColor = System.Drawing.Color.FromArgb(31, 41, 55);
+            this.logHeader.Controls.Add(this.btnClearLog);
+            this.logHeader.Controls.Add(this.lblLog);
+            this.logHeader.Dock = System.Windows.Forms.DockStyle.Top;
+            this.logHeader.Height = 36;
+            this.lblLog.AutoSize = true;
+            this.lblLog.Font = new System.Drawing.Font("Segoe UI Semibold", 10F);
+            this.lblLog.ForeColor = System.Drawing.Color.White;
+            this.lblLog.Location = new System.Drawing.Point(13, 8);
+            this.lblLog.Text = "Activity log  •  گزارش رویدادها";
+            this.btnClearLog.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            this.btnClearLog.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnClearLog.ForeColor = System.Drawing.Color.White;
+            this.btnClearLog.Location = new System.Drawing.Point(1094, 5);
+            this.btnClearLog.Size = new System.Drawing.Size(72, 26);
+            this.btnClearLog.Text = "Clear";
+            this.btnClearLog.Click += new System.EventHandler(this.btnClearLog_Click);
+            // status
+            this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { this.lblStatus, this.lblSpacer, this.lblVersion });
+            this.statusStrip.SizingGrip = false;
+            this.lblStatus.Text = "Ready";
+            this.lblSpacer.Spring = true;
+            this.lblVersion.Text = "HitBTC API v3  |  Read-only console";
+            // form
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(564, 267);
-            this.Controls.Add(this.gridviewReponse);
-            this.Controls.Add(this.btnSocketTrading);
-            this.Controls.Add(this.btnMarketData);
-            this.Controls.Add(this.btnAccount);
-            this.Controls.Add(this.btnTradingHistory);
-            this.Controls.Add(this.btnTradingTest);
-            this.Controls.Add(this.btnPublicTest);
+            this.BackColor = System.Drawing.Color.FromArgb(244, 247, 251);
+            this.ClientSize = new System.Drawing.Size(1184, 761);
+            this.Controls.Add(this.contentSplit);
+            this.Controls.Add(this.actionsPanel);
+            this.Controls.Add(this.settingsPanel);
+            this.Controls.Add(this.headerPanel);
+            this.Controls.Add(this.statusStrip);
+            this.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.MinimumSize = new System.Drawing.Size(980, 650);
             this.Name = "frmTest";
-            this.Text = "Test From";
-            ((System.ComponentModel.ISupportInitialize)(this.gridviewReponse)).EndInit();
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "HitBTC.Net API v3 Test Console";
+            this.Load += new System.EventHandler(this.frmTest_Load);
+            this.headerPanel.ResumeLayout(false);
+            this.headerPanel.PerformLayout();
+            this.settingsPanel.ResumeLayout(false);
+            this.settingsPanel.PerformLayout();
+            this.actionsPanel.ResumeLayout(false);
+            this.grpPublicRest.ResumeLayout(false);
+            this.publicButtons.ResumeLayout(false);
+            this.grpPrivateRest.ResumeLayout(false);
+            this.privateButtons.ResumeLayout(false);
+            this.grpWebSocket.ResumeLayout(false);
+            this.socketButtons.ResumeLayout(false);
+            this.contentSplit.Panel1.ResumeLayout(false);
+            this.contentSplit.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.contentSplit)).EndInit();
+            this.contentSplit.ResumeLayout(false);
+            this.resultPanel.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.gridResults)).EndInit();
+            this.resultHeader.ResumeLayout(false);
+            this.resultHeader.PerformLayout();
+            this.logPanel.ResumeLayout(false);
+            this.logHeader.ResumeLayout(false);
+            this.logHeader.PerformLayout();
+            this.statusStrip.ResumeLayout(false);
+            this.statusStrip.PerformLayout();
             this.ResumeLayout(false);
-
+            this.PerformLayout();
         }
 
-        #endregion
+        private static void ConfigureActionButton(System.Windows.Forms.Button button, string text,
+            System.EventHandler handler)
+        {
+            button.AutoSize = true;
+            button.BackColor = System.Drawing.Color.White;
+            button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            button.Margin = new System.Windows.Forms.Padding(3);
+            button.Padding = new System.Windows.Forms.Padding(5, 2, 5, 2);
+            button.Text = text;
+            button.UseVisualStyleBackColor = false;
+            button.Click += handler;
+        }
 
-        private System.Windows.Forms.Button btnPublicTest;
-        private System.Windows.Forms.Button btnTradingTest;
+        private System.Windows.Forms.Panel headerPanel;
+        private System.Windows.Forms.Label lblTitle;
+        private System.Windows.Forms.Label lblSubtitle;
+        private System.Windows.Forms.TableLayoutPanel settingsPanel;
+        private System.Windows.Forms.Label lblSymbol;
+        private System.Windows.Forms.TextBox txtSymbol;
+        private System.Windows.Forms.Label lblApiKey;
+        private System.Windows.Forms.TextBox txtApiKey;
+        private System.Windows.Forms.Label lblSecret;
+        private System.Windows.Forms.TextBox txtSecret;
+        private System.Windows.Forms.CheckBox chkShowSecret;
+        private System.Windows.Forms.Button btnLoadEnvironment;
+        private System.Windows.Forms.TableLayoutPanel actionsPanel;
+        private System.Windows.Forms.GroupBox grpPublicRest;
+        private System.Windows.Forms.FlowLayoutPanel publicButtons;
+        private System.Windows.Forms.Button btnTicker;
+        private System.Windows.Forms.Button btnSymbols;
+        private System.Windows.Forms.Button btnCurrencies;
+        private System.Windows.Forms.Button btnOrderBook;
+        private System.Windows.Forms.Button btnCandles;
+        private System.Windows.Forms.GroupBox grpPrivateRest;
+        private System.Windows.Forms.FlowLayoutPanel privateButtons;
+        private System.Windows.Forms.Button btnSpotBalance;
+        private System.Windows.Forms.Button btnActiveOrders;
         private System.Windows.Forms.Button btnTradingHistory;
-        private System.Windows.Forms.Button btnAccount;
-        private System.Windows.Forms.Button btnMarketData;
-        private System.Windows.Forms.Button btnSocketTrading;
-        private System.Windows.Forms.DataGridView gridviewReponse;
+        private System.Windows.Forms.Button btnWalletBalance;
+        private System.Windows.Forms.GroupBox grpWebSocket;
+        private System.Windows.Forms.FlowLayoutPanel socketButtons;
+        private System.Windows.Forms.Button btnSubscribeTicker;
+        private System.Windows.Forms.Button btnSocketBalance;
+        private System.Windows.Forms.SplitContainer contentSplit;
+        private System.Windows.Forms.Panel resultPanel;
+        private System.Windows.Forms.DataGridView gridResults;
+        private System.Windows.Forms.Panel resultHeader;
+        private System.Windows.Forms.Label lblResults;
+        private System.Windows.Forms.Label lblResultCount;
+        private System.Windows.Forms.Panel logPanel;
+        private System.Windows.Forms.RichTextBox txtLog;
+        private System.Windows.Forms.Panel logHeader;
+        private System.Windows.Forms.Label lblLog;
+        private System.Windows.Forms.Button btnClearLog;
+        private System.Windows.Forms.StatusStrip statusStrip;
+        private System.Windows.Forms.ToolStripStatusLabel lblStatus;
+        private System.Windows.Forms.ToolStripStatusLabel lblSpacer;
+        private System.Windows.Forms.ToolStripStatusLabel lblVersion;
     }
 }
-

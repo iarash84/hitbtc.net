@@ -77,6 +77,10 @@ $env:HITBTC_SECRET_KEY = "your-secret-key"
 dotnet run --project Test/Test.csproj
 ```
 
+The demo is a read-only verification console with grouped REST/WebSocket actions,
+masked credentials, a result grid, operation status, and a timestamped activity
+log. It never submits orders, transfers, or withdrawals.
+
 ### Releases
 
 Merge changes through a pull request to the protected `master` branch. After CI succeeds, create and push a semantic version tag:
@@ -181,6 +185,12 @@ $env:HITBTC_API_KEY = "your-api-key"
 $env:HITBTC_SECRET_KEY = "your-secret-key"
 dotnet run --project Test/Test.csproj
 ```
+
+<div dir="rtl" align="right">
+
+برنامهٔ نمونه یک کنسول تست فقط‌خواندنی با عملیات دسته‌بندی‌شدهٔ REST و WebSocket، اعتبارنامهٔ مخفی، جدول نتایج، وضعیت عملیات و لاگ زمان‌دار است. این برنامه هیچ سفارش، انتقال یا برداشتی ثبت نمی‌کند.
+
+</div>
 
 <div dir="rtl" align="right">
 

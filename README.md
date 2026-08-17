@@ -180,6 +180,12 @@ Trading, Trading History, Account, and socket Trading buttons do. The demo only
 reads public/private data or creates a subscription; it does not submit orders,
 transfers, or withdrawals.
 
+The redesigned console groups public REST, private REST, and WebSocket actions.
+It provides an editable symbol, masked credential fields, tabular responses, a
+status indicator, and a timestamped activity log containing request duration and
+typed API errors. Credentials can be loaded from the environment without being
+written to the log.
+
 ## Development workflow
 
 The `master` branch is protected. Make each logical change on a feature branch
@@ -386,6 +392,8 @@ dotnet run --project Test/Test.csproj
 <div dir="rtl" align="right">
 
 برنامهٔ نمونه سفارش، انتقال وجه یا برداشت ایجاد نمی‌کند و فقط داده‌ها و اشتراک‌ها را بررسی می‌کند.
+
+کنسول بازطراحی‌شده عملیات REST عمومی، REST خصوصی و WebSocket را جدا می‌کند. نماد قابل‌ویرایش، فیلدهای مخفی اعتبارنامه، نمایش جدولی پاسخ، وضعیت عملیات و لاگ زمان‌دار برای مدت درخواست و خطاهای API در دسترس است. مقدار کلیدها هیچ‌گاه داخل لاگ نوشته نمی‌شود.
 
 ## روند توسعه و انتشار
 

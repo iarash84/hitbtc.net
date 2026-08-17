@@ -116,6 +116,7 @@
     <Compile Include="PublicEnum.cs" />
     <Compile Include="Utilities.cs" />
     <Compile Include="WebSocketClientAdapter.cs" />
+    <Compile Include="WebSocketReconnectOptions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

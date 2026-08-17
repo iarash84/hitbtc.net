@@ -101,6 +101,10 @@ namespace Test
                 {
                     var notifications = new List<NotificationRow>();
                     var notificationLock = new object();
+                    api.Reconnecting += (reconnectSender, reconnect) => BeginInvoke(new Action(() =>
+                        WriteLog(LogLevel.Info, string.Format(
+                            "WebSocket disconnected; reconnect attempt {0} starts in {1:N0} ms.",
+                            reconnect.Attempt, reconnect.Delay.TotalMilliseconds))));
                     api.NotificationReceived += (notificationSender, notification) =>
                     {
                         List<NotificationRow> snapshot;

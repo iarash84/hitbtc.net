@@ -154,6 +154,11 @@ using (var stop = new CancellationTokenSource())
 
 Commands and the listener are serialized on each connection, so complete all
 subscriptions before starting the long-running listener.
+If the connection closes, the listener reconnects with capped exponential
+backoff and automatically replays successful subscriptions. Configure the policy
+with `WebSocketReconnectOptions`; observe attempts through the `Reconnecting`
+event. Trading commands are never automatically resent because doing so could
+duplicate a financial operation.
 
 ## Migrating from API v2 to API v3
 
@@ -378,6 +383,8 @@ using (var api = new HitBtcSocketApi())
 نسخهٔ ۳ از اتصال‌های جداگانه برای داده‌های عمومی و عملیات معاملاتی استفاده می‌کند. درخواست‌های یک‌بارهٔ ارزها، نمادها و تاریخچهٔ معاملات دیگر از طریق WebSocket ارائه نمی‌شوند و باید از `HitBtcRestApi.PublicData` یا `HitBtcRestApi.TradingHistory` استفاده شود.
 
 پاسخ JSON نامعتبر، خطای سرور یا شناسهٔ نامنطبق با `HitBtcWebSocketException` گزارش می‌شود. پس از دریافت تأیید اشتراک، با event به نام `NotificationReceived` و متد `ListenForNotificationsAsync` می‌توان notificationها را تا زمان لغو شدن `CancellationToken` به‌صورت پیوسته دریافت کرد. تمام subscriptionها را پیش از شروع listener اجرا کنید، زیرا commandها و دریافت پیوسته روی هر اتصال به‌صورت سریال اجرا می‌شوند.
+
+در صورت قطع اتصال، listener با exponential backoff محدودشده دوباره متصل می‌شود و subscriptionهای موفق را تکرار می‌کند. تنظیمات از طریق `WebSocketReconnectOptions` و رویداد تلاش‌ها از طریق `Reconnecting` در دسترس است. commandهای معاملاتی هرگز خودکار تکرار نمی‌شوند تا عملیات مالی تکراری ایجاد نشود.
 
 ## تفاوت نسخهٔ ۲ و ۳
 

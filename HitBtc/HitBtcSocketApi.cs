@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Hitbtc.HitBtcCategories;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
 namespace Hitbtc
 {
@@ -24,6 +25,9 @@ namespace Hitbtc
         private string _secretKey;
         private bool _connectionAuthenticated;
         private bool _disposed;
+        private readonly WebSocketReconnectOptions _reconnectOptions;
+        private readonly Dictionary<string, string> _publicSubscriptions = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _tradingSubscriptions = new Dictionary<string, string>();
 
         public SocketMarketData MarketData { get; set; }
         public SocketTrading Trading { get; set; }
@@ -31,15 +35,25 @@ namespace Hitbtc
 
         /// <summary>Raised for every message read by <see cref="ListenForNotificationsAsync"/>.</summary>
         public event EventHandler<HitBtcNotificationEventArgs> NotificationReceived;
+        public event EventHandler<HitBtcReconnectingEventArgs> Reconnecting;
 
-        public HitBtcSocketApi() : this(new WebSocketClientAdapter(), new WebSocketClientAdapter()) { }
+        public HitBtcSocketApi() : this(new WebSocketReconnectOptions()) { }
 
-        internal HitBtcSocketApi(IWebSocketClient clientWebSocket) : this(clientWebSocket, clientWebSocket) { }
+        public HitBtcSocketApi(WebSocketReconnectOptions reconnectOptions)
+            : this(new WebSocketClientAdapter(), new WebSocketClientAdapter(), reconnectOptions) { }
+
+        internal HitBtcSocketApi(IWebSocketClient clientWebSocket)
+            : this(clientWebSocket, clientWebSocket, new WebSocketReconnectOptions()) { }
 
         internal HitBtcSocketApi(IWebSocketClient publicSocket, IWebSocketClient tradingSocket)
+            : this(publicSocket, tradingSocket, new WebSocketReconnectOptions()) { }
+
+        internal HitBtcSocketApi(IWebSocketClient publicSocket, IWebSocketClient tradingSocket,
+            WebSocketReconnectOptions reconnectOptions)
         {
             _publicSocket = publicSocket ?? throw new ArgumentNullException(nameof(publicSocket));
             _tradingSocket = tradingSocket ?? throw new ArgumentNullException(nameof(tradingSocket));
+            _reconnectOptions = reconnectOptions ?? throw new ArgumentNullException(nameof(reconnectOptions));
             MarketData = new SocketMarketData(this);
             Trading = new SocketTrading(this);
         }
@@ -65,29 +79,56 @@ namespace Hitbtc
             await operationLock.WaitAsync(cancellationToken).ConfigureAwait(false);
             try
             {
-                await EnsureConnected(socket, requireAuthentication, cancellationToken).ConfigureAwait(false);
-                if (requireAuthentication && !_connectionAuthenticated)
-                    await Authenticate(socket, cancellationToken).ConfigureAwait(false);
-
+                var reconnectAttempt = 0;
+                var replaySubscriptions = false;
                 while (true)
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    var content = await Receive(socket, cancellationToken).ConfigureAwait(false);
-                    JObject message;
                     try
                     {
-                        message = JObject.Parse(content);
+                        await EnsureConnected(socket, requireAuthentication, cancellationToken).ConfigureAwait(false);
+                        if (requireAuthentication && !_connectionAuthenticated)
+                            await Authenticate(socket, cancellationToken).ConfigureAwait(false);
+                        if (replaySubscriptions)
+                        {
+                            await ReplaySubscriptions(socket, requireAuthentication, cancellationToken)
+                                .ConfigureAwait(false);
+                            replaySubscriptions = false;
+                        }
+
+                        cancellationToken.ThrowIfCancellationRequested();
+                        var content = await Receive(socket, cancellationToken).ConfigureAwait(false);
+                        JObject message;
+                        try
+                        {
+                            message = JObject.Parse(content);
+                        }
+                        catch (Newtonsoft.Json.JsonException exception)
+                        {
+                            throw new HitBtcWebSocketException(
+                                "HitBTC returned malformed notification JSON.", null, exception);
+                        }
+
+                        if (message["error"] != null)
+                            throw CreateWebSocketError(message, "HitBTC WebSocket notification failed.");
+
+                        reconnectAttempt = 0;
+                        OnNotificationReceived(new HitBtcNotificationEventArgs(content, message));
                     }
-                    catch (Newtonsoft.Json.JsonException exception)
+                    catch (WebSocketException exception) when (!cancellationToken.IsCancellationRequested)
                     {
-                        throw new HitBtcWebSocketException(
-                            "HitBTC returned malformed notification JSON.", null, exception);
+                        reconnectAttempt++;
+                        if (reconnectAttempt > _reconnectOptions.MaxAttempts)
+                            throw new HitBtcWebSocketException(
+                                "HitBTC WebSocket reconnect attempts were exhausted.", null, exception);
+
+                        if (requireAuthentication) _connectionAuthenticated = false;
+                        socket.Reset();
+                        replaySubscriptions = true;
+                        var delay = _reconnectOptions.GetDelay(reconnectAttempt);
+                        OnReconnecting(new HitBtcReconnectingEventArgs(reconnectAttempt, delay,
+                            requireAuthentication, exception));
+                        await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
                     }
-
-                    if (message["error"] != null)
-                        throw CreateWebSocketError(message, "HitBTC WebSocket notification failed.");
-
-                    OnNotificationReceived(new HitBtcNotificationEventArgs(content, message));
                 }
             }
             catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
@@ -103,6 +144,12 @@ namespace Hitbtc
         private void OnNotificationReceived(HitBtcNotificationEventArgs eventArgs)
         {
             var handler = NotificationReceived;
+            if (handler != null) handler(this, eventArgs);
+        }
+
+        private void OnReconnecting(HitBtcReconnectingEventArgs eventArgs)
+        {
+            var handler = Reconnecting;
             if (handler != null) handler(this, eventArgs);
         }
 
@@ -131,6 +178,7 @@ namespace Hitbtc
                 await SendCommand(socket, request, cancellationToken).ConfigureAwait(false);
                 var content = await Receive(socket, cancellationToken).ConfigureAwait(false);
                 ValidateResponse(request, content);
+                RememberSubscription(request, requireAuthentication);
                 return new ApiResponse { Content = content };
             }
             finally
@@ -144,10 +192,33 @@ namespace Hitbtc
         {
             if (socket.State == WebSocketState.Open)
                 return;
-            if (socket.State != WebSocketState.None)
-                throw new WebSocketException("The WebSocket is not connectable: " + socket.State);
+            if (socket.State != WebSocketState.None) socket.Reset();
             var endpoint = trading ? TradingEndpoint : PublicEndpoint;
             await socket.ConnectAsync(new Uri(endpoint), cancellationToken).ConfigureAwait(false);
+        }
+
+        private async Task ReplaySubscriptions(IWebSocketClient socket, bool authenticated,
+            CancellationToken cancellationToken)
+        {
+            var subscriptions = authenticated ? _tradingSubscriptions : _publicSubscriptions;
+            foreach (var request in subscriptions.Values)
+            {
+                await SendCommand(socket, request, cancellationToken).ConfigureAwait(false);
+                var response = await Receive(socket, cancellationToken).ConfigureAwait(false);
+                ValidateResponse(request, response);
+            }
+        }
+
+        private void RememberSubscription(string requestContent, bool authenticated)
+        {
+            var request = JObject.Parse(requestContent);
+            var method = request.Value<string>("method");
+            if (method != "subscribe" && method != "unsubscribe") return;
+            var key = (request.Value<string>("ch") ?? string.Empty) + "|" +
+                (request["params"] == null ? string.Empty : request["params"].ToString(Newtonsoft.Json.Formatting.None));
+            var subscriptions = authenticated ? _tradingSubscriptions : _publicSubscriptions;
+            if (method == "subscribe") subscriptions[key] = requestContent;
+            else subscriptions.Remove(key);
         }
 
         private async Task Authenticate(IWebSocketClient socket, CancellationToken cancellationToken)

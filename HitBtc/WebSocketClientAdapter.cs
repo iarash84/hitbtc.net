@@ -12,15 +12,22 @@ namespace Hitbtc
         Task SendAsync(ArraySegment<byte> buffer, WebSocketMessageType messageType, bool endOfMessage,
             CancellationToken cancellationToken);
         Task<WebSocketReceiveResult> ReceiveAsync(ArraySegment<byte> buffer, CancellationToken cancellationToken);
+        void Reset();
     }
 
     internal sealed class WebSocketClientAdapter : IWebSocketClient
     {
-        private readonly ClientWebSocket _client = new ClientWebSocket();
+        private ClientWebSocket _client = new ClientWebSocket();
         public WebSocketState State => _client.State;
 
         public Task ConnectAsync(Uri uri, CancellationToken cancellationToken) =>
             _client.ConnectAsync(uri, cancellationToken);
+
+        public void Reset()
+        {
+            _client.Dispose();
+            _client = new ClientWebSocket();
+        }
 
         public Task SendAsync(ArraySegment<byte> buffer, WebSocketMessageType messageType, bool endOfMessage,
             CancellationToken cancellationToken) =>

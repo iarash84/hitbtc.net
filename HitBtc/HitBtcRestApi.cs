@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Threading;
 using Hitbtc.HitBtcCategories;
 using RestSharp;
 using RestSharp.Authenticators;
@@ -39,26 +40,44 @@ namespace Hitbtc
             Account = new RestAccount(this);
         }
 
-        public async Task<ApiResponse> Execute(RestRequest request, bool requireAuthentication = true)
+        public virtual Task<ApiResponse> Execute(RestRequest request, bool requireAuthentication = true)
         {
-            if (requireAuthentication && !IsAuthorized)
-                throw new Exception("AccessTokenInvalid");
+            return ExecuteCore(request, requireAuthentication, CancellationToken.None);
+        }
 
-            var client = new RestClient(Url);
+        /// <summary>Executes a REST request with cancellation support.</summary>
+        public virtual Task<ApiResponse> Execute(RestRequest request, bool requireAuthentication,
+            CancellationToken cancellationToken)
+        {
+            return ExecuteCore(request, requireAuthentication, cancellationToken);
+        }
+
+        private async Task<ApiResponse> ExecuteCore(RestRequest request, bool requireAuthentication,
+            CancellationToken cancellationToken)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+            if (requireAuthentication && !IsAuthorized)
+                throw new InvalidOperationException("The request requires authorization. Call Authorize first.");
+
+            var options = new RestClientOptions(Url);
 
             if (requireAuthentication)
-                client.Authenticator = new HttpBasicAuthenticator(_apiKey, _secretKey);
+                options.Authenticator = new HttpBasicAuthenticator(_apiKey, _secretKey);
 
-            var response = await client.GetResponseAsync(request).ConfigureAwait(false);
-
-            if (response.ErrorException != null)
+            using (var client = new RestClient(options))
             {
-                const string message = "Error retrieving response.  Check inner details for more info.";
-                var exception = new ApplicationException(message, response.ErrorException);
-                throw exception;
-            }
+                var response = await client.ExecuteAsync(request, cancellationToken).ConfigureAwait(false);
 
-            return new ApiResponse { Content = response.Content };
+                if (response.ErrorException != null || !response.IsSuccessful)
+                {
+                    var message = string.Format("HitBTC request failed with HTTP status {0} ({1}).",
+                        (int)response.StatusCode, response.StatusDescription);
+                    throw new ApplicationException(message, response.ErrorException);
+                }
+
+                return new ApiResponse { Content = response.Content };
+            }
         }
 
         /// <summary>
@@ -73,35 +92,14 @@ namespace Hitbtc
         /// <param name="secretKey">Secret key from the Settings page.</param>
         public void Authorize(string apiKey, string secretKey)
         {
+            if (string.IsNullOrWhiteSpace(apiKey))
+                throw new ArgumentException("API key cannot be empty.", nameof(apiKey));
+            if (string.IsNullOrWhiteSpace(secretKey))
+                throw new ArgumentException("Secret key cannot be empty.", nameof(secretKey));
             _apiKey = apiKey;
             _secretKey = secretKey;
             IsAuthorized = true;
         }
 
-    }
-    public static class RestClientExtensions
-    {
-        private static Task<T> SelectAsync<T>(this RestClient client, IRestRequest request,
-            Func<IRestResponse, T> selector)
-        {
-            var tcs = new TaskCompletionSource<T>();
-            var loginResponse = client.ExecuteAsync(request, r =>
-            {
-                if (r.ErrorException == null)
-                {
-                    tcs.SetResult(selector(r));
-                }
-                else
-                {
-                    tcs.SetException(r.ErrorException);
-                }
-            });
-            return tcs.Task;
-        }
-
-        public static Task<IRestResponse> GetResponseAsync(this RestClient client, IRestRequest request)
-        {
-            return client.SelectAsync(request, r => r);
-        }
     }
 }

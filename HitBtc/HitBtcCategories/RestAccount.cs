@@ -41,7 +41,7 @@ namespace Hitbtc.HitBtcCategories
         /// <returns></returns>
         public async Task<AddressModel> PostAddress(string currency)
         {
-            var request = new RestRequest("/api/2/account/crypto/address/{currency}", Method.POST);
+            var request = new RestRequest("/api/2/account/crypto/address/{currency}", Method.Post);
             request.AddParameter("currency", currency, ParameterType.UrlSegment);
             return await _hitBtcRestApi.Execute(request);
         }
@@ -60,19 +60,19 @@ namespace Hitbtc.HitBtcCategories
         public async Task<IdObject> PostWithraw(string currency, int amount, string address, string paymentId = null,
             string networkFee = null, bool includeFee = false, bool autoCommit = true)
         {
-            var request = new RestRequest("/api/2/account/crypto/withdraw");
+            var request = new RestRequest("/api/2/account/crypto/withdraw", Method.Post);
             if (!string.IsNullOrEmpty(currency))
-                request.AddParameter("currency", currency, ParameterType.UrlSegment);
+                request.AddParameter("currency", currency);
             if (amount > 0)
-                request.AddParameter("amount", amount, ParameterType.UrlSegment);
+                request.AddParameter("amount", amount);
             if (!string.IsNullOrEmpty(address))
-                request.AddParameter("address", address, ParameterType.UrlSegment);
+                request.AddParameter("address", address);
             if (!string.IsNullOrEmpty(paymentId))
-                request.AddParameter("paymentId", paymentId, ParameterType.UrlSegment);
+                request.AddParameter("paymentId", paymentId);
             if (!string.IsNullOrEmpty(networkFee))
-                request.AddParameter("networkFee", networkFee, ParameterType.UrlSegment);
-            request.AddParameter("includeFee", includeFee, ParameterType.UrlSegment);
-            request.AddParameter("autoCommit", autoCommit, ParameterType.UrlSegment);
+                request.AddParameter("networkFee", networkFee);
+            request.AddParameter("includeFee", includeFee);
+            request.AddParameter("autoCommit", autoCommit);
             return await _hitBtcRestApi.Execute(request);
         }
 
@@ -83,7 +83,7 @@ namespace Hitbtc.HitBtcCategories
         /// <returns></returns>
         public async Task<WithdrawConfirm> PutWithraw(string withrawId)
         {
-            var request = new RestRequest("/api/2/account/crypto/withdraw/{id}");
+            var request = new RestRequest("/api/2/account/crypto/withdraw/{id}", Method.Put);
             request.AddParameter("id", withrawId, ParameterType.UrlSegment);
             return await _hitBtcRestApi.Execute(request);
         }
@@ -95,7 +95,7 @@ namespace Hitbtc.HitBtcCategories
         /// <returns></returns>
         public async Task<WithdrawConfirm> DeleteWithraw(string withrawId)
         {
-            var request = new RestRequest("/api/2/account/crypto/withdraw/{id}", Method.DELETE);
+            var request = new RestRequest("/api/2/account/crypto/withdraw/{id}", Method.Delete);
             request.AddParameter("id", withrawId, ParameterType.UrlSegment);
             return await _hitBtcRestApi.Execute(request);
         }
@@ -110,12 +110,12 @@ namespace Hitbtc.HitBtcCategories
         public async Task<IdObject> PostTransfer(string currency, int amount,
             PublicEnum.EnTransferType type = PublicEnum.EnTransferType.bankToExchange)
         {
-            var request = new RestRequest("/api/2/account/transfer", Method.POST);
+            var request = new RestRequest("/api/2/account/transfer", Method.Post);
             if (!string.IsNullOrEmpty(currency))
-                request.AddParameter("currency", currency, ParameterType.UrlSegment);
+                request.AddParameter("currency", currency);
             if (amount > 0)
-                request.AddParameter("amount", amount, ParameterType.UrlSegment);
-            request.AddParameter("type", type, ParameterType.UrlSegment);
+                request.AddParameter("amount", amount);
+            request.AddParameter("type", type.ToString());
             return await _hitBtcRestApi.Execute(request);
         }
 
@@ -144,20 +144,20 @@ namespace Hitbtc.HitBtcCategories
         public async Task<List<Transaction>> GetTransaction(string transactionId, string currency, string from, string till, int offset, int limit = 100,
             PublicEnum.EnSort sort = PublicEnum.EnSort.Desc, PublicEnum.EnBy by = PublicEnum.EnBy.timestamp)
         {
-            var request = new RestRequest("/api/2/account/transactions/{id}", Method.GET);
+            var request = new RestRequest("/api/2/account/transactions/{id}", Method.Get);
             request.AddParameter("id", transactionId, ParameterType.UrlSegment);
             if (!string.IsNullOrEmpty(currency))
-                request.AddParameter("currency", currency, ParameterType.UrlSegment);
-            request.AddParameter("sort", sort.ToString(), ParameterType.UrlSegment);
-            request.AddParameter("by", by.ToString(), ParameterType.UrlSegment);
+                request.AddQueryParameter("currency", currency);
+            request.AddQueryParameter("sort", sort.ToString());
+            request.AddQueryParameter("by", by.ToString());
             if (!string.IsNullOrEmpty(from))
-                request.AddParameter("from", from, ParameterType.UrlSegment);
+                request.AddQueryParameter("from", from);
             if (!string.IsNullOrEmpty(till))
-                request.AddParameter("till", till, ParameterType.UrlSegment);
+                request.AddQueryParameter("till", till);
             if (limit > 0)
-                request.AddParameter("limit", limit, ParameterType.UrlSegment);
+                request.AddQueryParameter("limit", limit.ToString());
             if (offset > 0)
-                request.AddParameter("offset", offset, ParameterType.UrlSegment);
+                request.AddQueryParameter("offset", offset.ToString());
             return await _hitBtcRestApi.Execute(request);
         }
     }

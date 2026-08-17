@@ -30,20 +30,20 @@ namespace Hitbtc.HitBtcCategories
         {
             var request = new RestRequest("/api/2/history/trades");
             if (!string.IsNullOrEmpty(symoblName))
-                request.Parameters.Add(new Parameter("symbol", symoblName, ParameterType.GetOrPost));
+                request.AddQueryParameter("symbol", symoblName);
 
-            request.Parameters.Add(new Parameter("sort", sort.ToString(), ParameterType.GetOrPost));
+            request.AddQueryParameter("sort", sort.ToString());
 
-            request.Parameters.Add(new Parameter("by", by.ToString(), ParameterType.GetOrPost));
+            request.AddQueryParameter("by", by.ToString());
 
             if (!string.IsNullOrEmpty(from))
-                request.Parameters.Add(new Parameter("from", from, ParameterType.GetOrPost));
+                request.AddQueryParameter("from", from);
             if (!string.IsNullOrEmpty(till))
-                request.Parameters.Add(new Parameter("till", till, ParameterType.GetOrPost));
+                request.AddQueryParameter("till", till);
             if (offset > 0)
-                request.Parameters.Add(new Parameter("offset", offset, ParameterType.GetOrPost));
+                request.AddQueryParameter("offset", offset.ToString());
             if (limit > 0)
-                request.Parameters.Add(new Parameter("limit", limit, ParameterType.GetOrPost));
+                request.AddQueryParameter("limit", limit.ToString());
 
             return await _hitBtcRestApi.Execute(request);
         }
@@ -58,17 +58,17 @@ namespace Hitbtc.HitBtcCategories
 
             var request = new RestRequest("/api/2/history/order");
             if (!string.IsNullOrEmpty(symoblName))
-                request.Parameters.Add(new Parameter("symbol", symoblName, ParameterType.GetOrPost));
+                request.AddQueryParameter("symbol", symoblName);
             if (!string.IsNullOrEmpty(clientOrderId))
-                request.Parameters.Add(new Parameter("clientOrderId", clientOrderId, ParameterType.GetOrPost));
+                request.AddQueryParameter("clientOrderId", clientOrderId);
             if (!string.IsNullOrEmpty(from))
-                request.Parameters.Add(new Parameter("from", from, ParameterType.GetOrPost));
+                request.AddQueryParameter("from", from);
             if (!string.IsNullOrEmpty(till))
-                request.Parameters.Add(new Parameter("till", till, ParameterType.GetOrPost));
+                request.AddQueryParameter("till", till);
             if (offset > 0)
-                request.Parameters.Add(new Parameter("offset", offset, ParameterType.GetOrPost));
+                request.AddQueryParameter("offset", offset.ToString());
             if (limit > 0)
-                request.Parameters.Add(new Parameter("limit", limit, ParameterType.GetOrPost));
+                request.AddQueryParameter("limit", limit.ToString());
 
             return await _hitBtcRestApi.Execute(request);
         }

@@ -43,6 +43,8 @@ var balances = await api.Trading.GetBalance();
 ```
 
 Never hard-code credentials. Read them from environment variables or a secure secret store.
+REST failures throw `HitBtcApiException`; HTTP status and exchange error code are
+available when supplied by the server.
 
 ### WebSocket quick start
 
@@ -54,6 +56,9 @@ using (var socket = new HitBtcSocketApi())
 ```
 
 API v3 uses separate public and trading WebSocket endpoints. Currency, symbol, and historical-trade lookups must use the REST client.
+Malformed responses, exchange errors, and mismatched response IDs throw
+`HitBtcWebSocketException`. Subscription methods currently return only the
+acknowledgement and do not expose a continuous high-level notification stream.
 
 ### API v3 migration
 
@@ -139,6 +144,8 @@ var balances = await api.Trading.GetBalance();
 
 کلیدهای API را داخل کد قرار ندهید. آن‌ها را از متغیر محیطی یا یک مخزن امن اسرار دریافت کنید.
 
+خطاهای REST با `HitBtcApiException` گزارش می‌شوند و در صورت موجود بودن، وضعیت HTTP و کد خطای صرافی قابل دسترسی است.
+
 ### شروع سریع WebSocket
 
 </div>
@@ -153,6 +160,8 @@ using (var socket = new HitBtcSocketApi())
 <div dir="rtl" align="right">
 
 نسخهٔ ۳ برای داده‌های عمومی و عملیات معاملاتی از endpointهای WebSocket جداگانه استفاده می‌کند. دریافت ارزها، نمادها و تاریخچهٔ معامله باید از طریق REST انجام شود.
+
+پاسخ خراب، خطای صرافی یا شناسهٔ پاسخ نامنطبق با `HitBtcWebSocketException` گزارش می‌شود. متدهای اشتراک فعلی فقط acknowledgement را برمی‌گردانند و جریان سطح‌بالای notification هنوز پیاده‌سازی نشده است.
 
 ### مهاجرت به API نسخهٔ ۳
 

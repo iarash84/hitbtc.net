@@ -109,6 +109,17 @@ namespace Hitbtc.Tests
         }
 
         [Fact]
+        public void OrderBookConversion_MissingSize_ThrowsJsonSerializationException()
+        {
+            var response = new ApiResponse { Content = "{\"ask\":[[\"101\"]],\"bid\":[]}" };
+
+            Assert.Throws<JsonSerializationException>(() =>
+            {
+                Orderbook orderbook = response;
+            });
+        }
+
+        [Fact]
         public void V3SnakeCaseFields_AreMappedToModels()
         {
             var response = new ApiResponse

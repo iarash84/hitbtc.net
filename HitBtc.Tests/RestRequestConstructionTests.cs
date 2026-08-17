@@ -12,7 +12,7 @@ namespace Hitbtc.Tests
         {
             var api = new CapturingRestApi("{}");
 
-            await api.Account.PostWithraw("BTC", 2, "wallet-address");
+            await api.Account.PostWithdraw("BTC", "2", "wallet-address");
 
             Assert.Equal(Method.Post, api.Request.Method);
             Assert.Equal("/api/3/wallet/crypto/withdraw", api.Request.Resource);
@@ -28,7 +28,7 @@ namespace Hitbtc.Tests
         {
             var api = new CapturingRestApi("{}");
 
-            await api.Account.PutWithraw("withdraw-1");
+            await api.Account.PutWithdraw("withdraw-1");
 
             Assert.Equal(Method.Put, api.Request.Method);
             AssertParameter(api.Request, "id", "withdraw-1", ParameterType.UrlSegment);
@@ -118,6 +118,30 @@ namespace Hitbtc.Tests
             Assert.Equal("/api/3/wallet/transfer", api.Request.Resource);
             AssertParameter(api.Request, "source", "wallet", ParameterType.GetOrPost);
             AssertParameter(api.Request, "destination", "spot", ParameterType.GetOrPost);
+        }
+
+        [Fact]
+        public async Task LegacyWithdraw_WithNetworkFee_RejectsUnsupportedFinancialParameter()
+        {
+            var api = new CapturingRestApi("{}");
+
+#pragma warning disable 618
+            await Assert.ThrowsAsync<System.NotSupportedException>(() =>
+                api.Account.PostWithraw("BTC", 2, "address", networkFee: "0.01"));
+#pragma warning restore 618
+
+            Assert.Null(api.Request);
+        }
+
+        [Fact]
+        public async Task TransactionById_WithLegacyFilters_RejectsIgnoredParameters()
+        {
+            var api = new CapturingRestApi("{}");
+
+            await Assert.ThrowsAsync<System.NotSupportedException>(() =>
+                api.Account.GetTransaction("tx-1", "BTC", null, null, 0));
+
+            Assert.Null(api.Request);
         }
 
         private static void AssertParameter(RestRequest request, string name, string value, ParameterType type)

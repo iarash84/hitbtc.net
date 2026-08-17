@@ -99,6 +99,8 @@ application.
 REST requests fail with an exception when authorization is missing, the server
 returns an unsuccessful HTTP status, or a response contains malformed JSON.
 These errors are not converted into empty response models.
+HTTP/API failures throw `HitBtcApiException`, which exposes `StatusCode` and the
+exchange `ApiErrorCode` when available.
 
 ## Using the WebSocket API
 
@@ -132,6 +134,11 @@ API v3 no longer provides one-shot currency, symbol, or historical-trade queries
 over WebSocket. Use `HitBtcRestApi.PublicData` and `HitBtcRestApi.TradingHistory` for those
 queries. The corresponding legacy methods are retained as obsolete members and
 throw `NotSupportedException` so that migration failures are explicit.
+Malformed messages, exchange errors, and mismatched response IDs throw
+`HitBtcWebSocketException`. The current high-level subscription methods return
+the subscription acknowledgement; applications that need a continuous event
+stream should use the low-level protocol carefully until a notification API is
+added.
 
 ## Migrating from API v2 to API v3
 
@@ -332,6 +339,8 @@ var orders = await api.Trading.GetOrders("BTCUSDT");
 
 کلیدها را داخل کد یا مخزن قرار ندهید و فقط دسترسی‌های موردنیاز برنامه را برای آن‌ها فعال کنید.
 
+خطاهای HTTP و خطاهای API با `HitBtcApiException` گزارش می‌شوند. این exception در صورت موجود بودن، وضعیت HTTP و کد خطای صرافی را نیز ارائه می‌دهد و پاسخ نامعتبر را به مدل خالی تبدیل نمی‌کند.
+
 ## استفاده از WebSocket
 
 </div>
@@ -346,6 +355,8 @@ using (var api = new HitBtcSocketApi())
 <div dir="rtl" align="right">
 
 نسخهٔ ۳ از اتصال‌های جداگانه برای داده‌های عمومی و عملیات معاملاتی استفاده می‌کند. درخواست‌های یک‌بارهٔ ارزها، نمادها و تاریخچهٔ معاملات دیگر از طریق WebSocket ارائه نمی‌شوند و باید از `HitBtcRestApi.PublicData` یا `HitBtcRestApi.TradingHistory` استفاده شود.
+
+پاسخ JSON نامعتبر، خطای سرور یا شناسهٔ نامنطبق با `HitBtcWebSocketException` گزارش می‌شود. متدهای فعلی اشتراک فقط تأیید اشتراک را برمی‌گردانند و هنوز API سطح‌بالایی برای دریافت پیوستهٔ notificationها ارائه نشده است.
 
 ## تفاوت نسخهٔ ۲ و ۳
 

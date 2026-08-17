@@ -34,10 +34,13 @@ namespace Hitbtc.HitBtcCategories
             return await _api.Execute(request);
         }
 
+        [System.Obsolete("Use PostWithdraw. API v3 does not accept networkFee.")]
         public Task<IdObject> PostWithraw(string currency, int amount, string address,
             string paymentId = null, string networkFee = null, bool includeFee = false,
             bool autoCommit = true)
         {
+            if (!string.IsNullOrWhiteSpace(networkFee))
+                throw new System.NotSupportedException("HitBTC API v3 does not accept networkFee. Select a network with PostWithdraw instead.");
             return PostWithdraw(currency, amount.ToString(CultureInfo.InvariantCulture), address,
                 paymentId, null, includeFee, autoCommit);
         }
@@ -58,14 +61,26 @@ namespace Hitbtc.HitBtcCategories
             return await _api.Execute(request);
         }
 
-        public async Task<WithdrawConfirm> PutWithraw(string withrawId)
+        [System.Obsolete("Use PutWithdraw.")]
+        public Task<WithdrawConfirm> PutWithraw(string withrawId)
         {
-            return await _api.Execute(WithdrawalRequest(withrawId, Method.Put));
+            return PutWithdraw(withrawId);
         }
 
-        public async Task<WithdrawConfirm> DeleteWithraw(string withrawId)
+        public async Task<WithdrawConfirm> PutWithdraw(string withdrawalId)
         {
-            return await _api.Execute(WithdrawalRequest(withrawId, Method.Delete));
+            return await _api.Execute(WithdrawalRequest(withdrawalId, Method.Put));
+        }
+
+        [System.Obsolete("Use DeleteWithdraw.")]
+        public Task<WithdrawConfirm> DeleteWithraw(string withrawId)
+        {
+            return DeleteWithdraw(withrawId);
+        }
+
+        public async Task<WithdrawConfirm> DeleteWithdraw(string withdrawalId)
+        {
+            return await _api.Execute(WithdrawalRequest(withdrawalId, Method.Delete));
         }
 
         public async Task<IdObject> PostTransfer(string currency, int amount,
@@ -91,10 +106,19 @@ namespace Hitbtc.HitBtcCategories
             PublicEnum.EnSort sort = PublicEnum.EnSort.Desc,
             PublicEnum.EnBy by = PublicEnum.EnBy.timestamp)
         {
+            if (!string.IsNullOrWhiteSpace(currency) || !string.IsNullOrWhiteSpace(from) ||
+                !string.IsNullOrWhiteSpace(till) || offset != 0 || limit != 100 ||
+                sort != PublicEnum.EnSort.Desc || by != PublicEnum.EnBy.timestamp)
+                throw new System.NotSupportedException("HitBTC API v3 does not support filters when retrieving a transaction by ID.");
+
+            return new List<Transaction> { await GetTransaction(transactionId) };
+        }
+
+        public async Task<Transaction> GetTransaction(string transactionId)
+        {
             var request = new RestRequest("/api/3/wallet/transactions/{id}");
             request.AddParameter("id", transactionId, ParameterType.UrlSegment);
-            Transaction transaction = await _api.Execute(request);
-            return new List<Transaction> { transaction };
+            return await _api.Execute(request);
         }
 
         private static RestRequest WithdrawalRequest(string id, Method method)

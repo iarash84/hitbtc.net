@@ -4,6 +4,7 @@ using System.Threading;
 using Hitbtc.HitBtcCategories;
 using RestSharp;
 using RestSharp.Authenticators;
+using Newtonsoft.Json.Linq;
 
 namespace Hitbtc
 {
@@ -25,14 +26,20 @@ namespace Hitbtc
         private const string Url = "https://api.hitbtc.com";
         private  string _apiKey;
         private  string _secretKey;
+        private readonly IRestTransport _transport;
 
         public RestTrading Trading { get; set; }
         public RestAccount Account { get; set; }
         public RestPublicData PublicData { get; set; }
         public RestTradingHistory TradingHistory { get; set; }
 
-        public HitBtcRestApi()
+        public HitBtcRestApi() : this(new RestSharpTransport())
         {
+        }
+
+        internal HitBtcRestApi(IRestTransport transport)
+        {
+            _transport = transport ?? throw new ArgumentNullException(nameof(transport));
             PublicData = new RestPublicData(this);
             TradingHistory = new RestTradingHistory(this);
             Trading = new RestTrading(this);
@@ -64,25 +71,44 @@ namespace Hitbtc
             if (requireAuthentication)
                 options.Authenticator = new HttpBasicAuthenticator(_apiKey, _secretKey);
 
-            using (var client = new RestClient(options))
+            var response = await _transport.ExecuteAsync(request, options, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (response.ErrorException != null || !response.IsSuccessful)
             {
-                var response = await client.ExecuteAsync(request, cancellationToken).ConfigureAwait(false);
-
-                if (response.ErrorException != null || !response.IsSuccessful)
-                {
-                    var message = string.Format("HitBTC request failed with HTTP status {0} ({1}).",
-                        (int)response.StatusCode, response.StatusDescription);
-                    throw new ApplicationException(message, response.ErrorException);
-                }
-
-                return new ApiResponse { Content = response.Content };
+                var apiError = TryReadApiError(response.Content);
+                var message = apiError == null
+                    ? string.Format("HitBTC request failed with HTTP status {0} ({1}).",
+                        (int)response.StatusCode, response.StatusDescription)
+                    : string.Format("HitBTC request failed: {0}", apiError.Value.Message);
+                throw new HitBtcApiException(message, response.StatusCode,
+                    apiError?.Code, response.ErrorException);
             }
+
+            return new ApiResponse { Content = response.Content };
         }
 
         /// <summary>
         /// Flag shows that user is authorized
         /// </summary>
-        public bool IsAuthorized { get; set; }
+        public bool IsAuthorized { get; private set; }
+
+        private static (string Code, string Message)? TryReadApiError(string content)
+        {
+            if (string.IsNullOrWhiteSpace(content)) return null;
+            try
+            {
+                var root = JObject.Parse(content);
+                var error = root["error"] as JObject ?? root;
+                var message = error.Value<string>("message") ?? error.Value<string>("description");
+                if (string.IsNullOrWhiteSpace(message)) return null;
+                return (error.Value<string>("code"), message);
+            }
+            catch (Newtonsoft.Json.JsonException)
+            {
+                return null;
+            }
+        }
 
         /// <summary>
         /// Method for authorization 

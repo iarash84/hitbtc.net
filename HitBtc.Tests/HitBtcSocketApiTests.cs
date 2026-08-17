@@ -132,9 +132,64 @@ namespace Hitbtc.Tests
             using (var api = new HitBtcSocketApi(socket))
             {
                 api.Authorize("key", "secret");
-                var error = await Assert.ThrowsAsync<InvalidOperationException>(() => api.Execute("{}"));
-                Assert.Contains("authentication failed", error.Message);
+                var error = await Assert.ThrowsAsync<HitBtcWebSocketException>(() => api.Execute("{}"));
+                Assert.Contains("invalid", error.Message);
             }
+        }
+
+        [Fact]
+        public async Task Execute_ErrorResponse_ThrowsTypedExceptionWithApiCode()
+        {
+            var socket = new FakeWebSocketClient();
+            socket.EnqueueText("{\"error\":{\"code\":\"2001\",\"message\":\"bad request\"},\"id\":4}");
+            using (var api = new HitBtcSocketApi(socket))
+            {
+                var error = await Assert.ThrowsAsync<HitBtcWebSocketException>(
+                    () => api.Execute("{\"id\":4}", false));
+                Assert.Equal("2001", error.ApiErrorCode);
+                Assert.Contains("bad request", error.Message);
+            }
+        }
+
+        [Fact]
+        public async Task Execute_MalformedResponse_ThrowsTypedException()
+        {
+            var socket = new FakeWebSocketClient();
+            socket.EnqueueText("not-json");
+            using (var api = new HitBtcSocketApi(socket))
+                await Assert.ThrowsAsync<HitBtcWebSocketException>(() => api.Execute("{}", false));
+        }
+
+        [Fact]
+        public async Task Execute_MalformedRequest_ThrowsBeforeConnecting()
+        {
+            var socket = new FakeWebSocketClient();
+            using (var api = new HitBtcSocketApi(socket))
+            {
+                await Assert.ThrowsAsync<ArgumentException>(() => api.Execute("not-json", false));
+                Assert.Equal(0, socket.ConnectCount);
+            }
+        }
+
+        [Fact]
+        public async Task Execute_MismatchedResponseId_ThrowsInsteadOfReturningWrongResponse()
+        {
+            var socket = new FakeWebSocketClient();
+            socket.EnqueueText("{\"result\":true,\"id\":2}");
+            using (var api = new HitBtcSocketApi(socket))
+                await Assert.ThrowsAsync<HitBtcWebSocketException>(
+                    () => api.Execute("{\"id\":1}", false));
+        }
+
+        [Fact]
+        public async Task Execute_MessageOverSafetyLimit_ThrowsWebSocketException()
+        {
+            var socket = new FakeWebSocketClient();
+            var chunk = new string('x', 8192);
+            for (var index = 0; index < 128; index++) socket.EnqueueFragment(chunk, false);
+            socket.EnqueueFragment("x", true);
+            using (var api = new HitBtcSocketApi(socket))
+                await Assert.ThrowsAsync<WebSocketException>(() => api.Execute("{}", false));
         }
 
         [Fact]
@@ -173,6 +228,7 @@ namespace Hitbtc.Tests
                 for (var i = 0; i < parts.Length; i++) Enqueue(parts[i], WebSocketMessageType.Text, i == parts.Length - 1);
             }
             public void EnqueueClose() => Enqueue("", WebSocketMessageType.Close, true);
+            public void EnqueueFragment(string text, bool end) => Enqueue(text, WebSocketMessageType.Text, end);
             private void Enqueue(string text, WebSocketMessageType type, bool end) =>
                 _fragments.Enqueue(new Fragment(Encoding.UTF8.GetBytes(text), type, end));
 

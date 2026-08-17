@@ -27,7 +27,7 @@ namespace Hitbtc
 
         public SocketMarketData MarketData { get; set; }
         public SocketTrading Trading { get; set; }
-        public bool IsAuthorized { get; set; }
+        public bool IsAuthorized { get; private set; }
 
         public HitBtcSocketApi() : this(new WebSocketClientAdapter(), new WebSocketClientAdapter()) { }
 
@@ -53,6 +53,7 @@ namespace Hitbtc
             ThrowIfDisposed();
             if (string.IsNullOrWhiteSpace(request))
                 throw new ArgumentException("The JSON-RPC request cannot be empty.", nameof(request));
+            EnsureValidRequest(request);
             if (requireAuthentication && !IsAuthorized)
                 throw new InvalidOperationException("The request requires authorization. Call Authorize first.");
 
@@ -66,7 +67,9 @@ namespace Hitbtc
                     await Authenticate(socket, cancellationToken).ConfigureAwait(false);
 
                 await SendCommand(socket, request, cancellationToken).ConfigureAwait(false);
-                return new ApiResponse { Content = await Receive(socket, cancellationToken).ConfigureAwait(false) };
+                var content = await Receive(socket, cancellationToken).ConfigureAwait(false);
+                ValidateResponse(request, content);
+                return new ApiResponse { Content = content };
             }
             finally
             {
@@ -99,10 +102,71 @@ namespace Hitbtc
             }.ToString(Newtonsoft.Json.Formatting.None);
 
             await SendCommand(socket, loginRequest, cancellationToken).ConfigureAwait(false);
-            var response = JObject.Parse(await Receive(socket, cancellationToken).ConfigureAwait(false));
-            if (response["error"] != null || response["result"] == null)
-                throw new InvalidOperationException("HitBTC WebSocket authentication failed.");
+            JObject response;
+            try
+            {
+                response = JObject.Parse(await Receive(socket, cancellationToken).ConfigureAwait(false));
+            }
+            catch (Newtonsoft.Json.JsonException exception)
+            {
+                throw new HitBtcWebSocketException("HitBTC returned malformed authentication JSON.", null, exception);
+            }
+            if (response["error"] != null || response["result"] == null ||
+                response["result"].Type == JTokenType.Boolean && !response["result"].Value<bool>())
+                throw CreateWebSocketError(response, "HitBTC WebSocket authentication failed.");
             _connectionAuthenticated = true;
+        }
+
+        private static void ValidateResponse(string requestContent, string responseContent)
+        {
+            JObject response;
+            try
+            {
+                response = JObject.Parse(responseContent);
+            }
+            catch (Newtonsoft.Json.JsonException exception)
+            {
+                throw new HitBtcWebSocketException("HitBTC returned malformed WebSocket JSON.", null, exception);
+            }
+
+            if (response["error"] != null)
+                throw CreateWebSocketError(response, "HitBTC WebSocket request failed.");
+
+            try
+            {
+                var request = JObject.Parse(requestContent);
+                var requestId = request["id"];
+                if (requestId != null && !JToken.DeepEquals(requestId, response["id"]))
+                    throw new HitBtcWebSocketException("HitBTC WebSocket response ID did not match the request ID.");
+            }
+            catch (Newtonsoft.Json.JsonException exception)
+            {
+                throw new ArgumentException("The WebSocket request must contain valid JSON.",
+                    nameof(requestContent), exception);
+            }
+        }
+
+        private static void EnsureValidRequest(string request)
+        {
+            try
+            {
+                JObject.Parse(request);
+            }
+            catch (Newtonsoft.Json.JsonException exception)
+            {
+                throw new ArgumentException("The WebSocket request must contain valid JSON.",
+                    nameof(request), exception);
+            }
+        }
+
+        private static HitBtcWebSocketException CreateWebSocketError(JObject response,
+            string fallbackMessage)
+        {
+            var error = response["error"] as JObject;
+            var code = error?.Value<string>("code");
+            var message = error?.Value<string>("message") ?? error?.Value<string>("description")
+                ?? fallbackMessage;
+            return new HitBtcWebSocketException(message, code);
         }
 
         private static Task SendCommand(IWebSocketClient socket, string jsonCommand,

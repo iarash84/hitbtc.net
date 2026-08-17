@@ -102,6 +102,7 @@
     <Compile Include="HitBtcModel\Fee.cs" />
     <Compile Include="HitBtcModel\Id.cs" />
     <Compile Include="HitBtcModel\Orderbook.cs" />
+    <Compile Include="HitBtcModel\OrderBookParameterConverter.cs" />
     <Compile Include="HitBtcModel\Orders.cs" />
     <Compile Include="HitBtcModel\Symbols.cs" />
     <Compile Include="HitBtcModel\Ticker.cs" />

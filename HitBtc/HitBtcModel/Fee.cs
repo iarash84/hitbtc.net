@@ -4,10 +4,10 @@ namespace Hitbtc.HitBtcModel
 {
     public class Fee
     {
-        [JsonProperty("takeLiquidityRate")]
+        [JsonProperty("take_rate")]
         public string TakeLiquidityRate { get; set; }
 
-        [JsonProperty("provideLiquidityRate")]
+        [JsonProperty("make_rate")]
         public string ProvideLiquidityRate { get; set; }
 
     }

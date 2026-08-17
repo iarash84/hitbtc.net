@@ -66,6 +66,7 @@
             this.btnTradingHistory.TabIndex = 3;
             this.btnTradingHistory.Text = "Trading History";
             this.btnTradingHistory.UseVisualStyleBackColor = true;
+            this.btnTradingHistory.Click += new System.EventHandler(this.btnTradingHistory_Click);
             // 
             // btnAccount
             // 
@@ -73,7 +74,7 @@
             this.btnAccount.Name = "btnAccount";
             this.btnAccount.Size = new System.Drawing.Size(106, 23);
             this.btnAccount.TabIndex = 4;
-            this.btnAccount.Text = "Acount";
+            this.btnAccount.Text = "Account";
             this.btnAccount.UseVisualStyleBackColor = true;
             this.btnAccount.Click += new System.EventHandler(this.btnAccount_Click);
             // 

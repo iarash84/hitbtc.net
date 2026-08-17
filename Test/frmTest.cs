@@ -1,80 +1,113 @@
-﻿using System;
+using System;
+using System.Collections;
 using System.Windows.Forms;
 using Hitbtc;
 
 namespace Test
 {
+    /// <summary>Small interactive client for exercising the HitBTC API v3 wrapper.</summary>
     public partial class frmTest : Form
     {
+        private const string DefaultSymbol = "BTCUSDT";
+
         public frmTest()
         {
             InitializeComponent();
         }
 
-        private const string ApiKey = "<APIKEY>";
-        private const string SecretKey = "<SecretKey>";
-
         private async void btnPublicTest_Click(object sender, EventArgs e)
         {
-            var hitBtcRestApi = new HitBtcRestApi();
-            //var response = await hitBtcRestApi.PublicData.GetSymbol();
-            //var response = await hitBtcRestApi.PublicData.GetSymbol("BTCUSD");
-            //var response = await hitBtcRestApi.PublicData.GetCurrency();
-            //var response = await hitBtcRestApi.PublicData.GetCurrency("btc");
-            //var response = await hitBtcRestApi.PublicData.GetTicker();
-            //var response = await hitBtcRestApi.PublicData.GetTicker("BTCUSD");
-            //var response = await hitBtcRestApi.PublicData.GetOrderbook("BTCUSD", 10);
-            //gridviewReponse.DataSource = response.ask;
-            var response = await hitBtcRestApi.PublicData.GetCandles("BTCUSD");
-
-            gridviewReponse.DataSource = response;
+            await Run(async () => Bind(await new HitBtcRestApi().PublicData.GetTicker(DefaultSymbol)));
         }
 
         private async void btnTradingTest_Click(object sender, EventArgs e)
         {
-            var hitBtcRestApi = new HitBtcRestApi();
-            if (!hitBtcRestApi.IsAuthorized)
-                hitBtcRestApi.Authorize(ApiKey, SecretKey);
+            await Run(async () =>
+            {
+                var api = AuthorizedRestClient();
+                Bind(await api.Trading.GetOrders(DefaultSymbol));
+            });
+        }
 
-            //var response = await hitBtcRestApi.Trading.GetBalance();
-            //var response = await hitBtcRestApi.Trading.GetFee("BTCUSD");
-            var response = await hitBtcRestApi.Trading.GetOrders("BTCUSD");
-            gridviewReponse.DataSource = response;
+        private async void btnTradingHistory_Click(object sender, EventArgs e)
+        {
+            await Run(async () =>
+            {
+                var api = AuthorizedRestClient();
+                Bind(await api.TradingHistory.GetTraders(DefaultSymbol, null, null, 0));
+            });
         }
 
         private async void btnAccount_Click(object sender, EventArgs e)
         {
-            var hitBtcRestApi = new HitBtcRestApi();
-            if (!hitBtcRestApi.IsAuthorized)
-                hitBtcRestApi.Authorize(ApiKey, SecretKey);
-
-            //var response = await hitBtcRestApi.Account.GetBalance();
-            var response = await hitBtcRestApi.Account.GetAddress("btc");
-            gridviewReponse.DataSource = response;
+            await Run(async () => Bind(await AuthorizedRestClient().Account.GetBalance()));
         }
 
         private async void btnMarketData_Click(object sender, EventArgs e)
         {
-            var hitBtcSocketApi = new HitBtcSocketApi();
-            //var response = await hitBtcSocketApi.MarketData.GetCurrency("ETH");
-            //var response = await hitBtcSocketApi.MarketData.GetCurrencies();
-            var response = await hitBtcSocketApi.MarketData.GetTrades("BTCUSD","From","till",1);
-            //rtbResponse.Text = response.Content;
-            //var response = await hitBtcSocketApi.MarketData.UnsubscribeCandles("BTCUSD");
-            gridviewReponse.DataSource = response;
+            await Run(async () =>
+            {
+                using (var api = new HitBtcSocketApi())
+                    Bind(await api.MarketData.SubscribeTicker(DefaultSymbol));
+            });
         }
 
         private async void btnSocketTrading_Click(object sender, EventArgs e)
         {
-            var hitBtcSocketApi = new HitBtcSocketApi();
+            await Run(async () =>
+            {
+                using (var api = AuthorizedSocketClient())
+                    Bind(await api.Trading.GetTradingBalance());
+            });
+        }
 
-            if (!hitBtcSocketApi.IsAuthorized)
-                hitBtcSocketApi.Authorize(ApiKey, SecretKey);
+        private static HitBtcRestApi AuthorizedRestClient()
+        {
+            var api = new HitBtcRestApi();
+            api.Authorize(ApiKey(), SecretKey());
+            return api;
+        }
 
-            //var response = await hitBtcSocketApi.Trading.SubscribeReports();
-            var response = await hitBtcSocketApi.Trading.GetTradingBalance();
+        private static HitBtcSocketApi AuthorizedSocketClient()
+        {
+            var api = new HitBtcSocketApi();
+            api.Authorize(ApiKey(), SecretKey());
+            return api;
+        }
 
-            gridviewReponse.DataSource = response;
+        private static string ApiKey()
+        {
+            return RequiredEnvironmentVariable("HITBTC_API_KEY");
+        }
+
+        private static string SecretKey()
+        {
+            return RequiredEnvironmentVariable("HITBTC_SECRET_KEY");
+        }
+
+        private static string RequiredEnvironmentVariable(string name)
+        {
+            var value = Environment.GetEnvironmentVariable(name);
+            if (string.IsNullOrWhiteSpace(value))
+                throw new InvalidOperationException("Set the " + name + " environment variable first.");
+            return value;
+        }
+
+        private void Bind(object response)
+        {
+            gridviewReponse.DataSource = response is IList ? response : new[] { response };
+        }
+
+        private static async System.Threading.Tasks.Task Run(Func<System.Threading.Tasks.Task> action)
+        {
+            try
+            {
+                await action();
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.Message, "HitBTC API v3", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

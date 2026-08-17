@@ -18,8 +18,7 @@ namespace Hitbtc
 //    504 Gateway Timeout. Request timeout expired
 
     /// <summary>
-    /// https://api.hitbtc.com/api/2/explore/
-    /// https://api.hitbtc.com/
+    /// HitBTC API v3 client. See https://api.hitbtc.com/api/3/explore/.
     /// </summary>
     public class HitBtcRestApi
     {

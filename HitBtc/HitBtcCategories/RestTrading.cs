@@ -1,70 +1,35 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Hitbtc.HitBtcModel;
 using RestSharp;
 
 namespace Hitbtc.HitBtcCategories
 {
-    /// <summary>
-    /// Trading RESTful API
-    /// </summary>
+    /// <summary>Spot trading operations for HitBTC API v3.</summary>
     public class RestTrading
     {
-        private readonly HitBtcRestApi _hitBtcRestApi;
+        private readonly HitBtcRestApi _api;
+        public RestTrading(HitBtcRestApi api) { _api = api; }
 
-        public RestTrading(HitBtcRestApi hitBtcApi)
-        {
-            _hitBtcRestApi = hitBtcApi;
-        }
-
-        /// <summary>
-        /// Get trading balance
-        /// </summary>
-        /// <returns></returns>
         public async Task<List<Balance>> GetBalance()
         {
-            return await _hitBtcRestApi.Execute(new RestRequest("/api/2/trading/balance", Method.Get));
+            return await _api.Execute(new RestRequest("/api/3/spot/balance", Method.Get));
         }
 
-        /// <summary>
-        /// Get trading fee rate
-        /// </summary>
-        /// <param name="symbolName"></param>
-        /// <returns></returns>
         public async Task<Fee> GetFee(string symbolName)
         {
-            var request = new RestRequest("/api/2/trading/fee/{symbol}", Method.Get);
+            var request = new RestRequest("/api/3/spot/fee/{symbol}", Method.Get);
             request.AddParameter("symbol", symbolName, ParameterType.UrlSegment);
-            return await _hitBtcRestApi.Execute(request);
+            return await _api.Execute(request);
         }
 
-        /// <summary>
-        /// List your current open orders
-        /// </summary>
-        /// <param name="symbolName"></param>
-        /// <returns></returns>
-        //public async Task<List<Order>> GetOrders(string symbolName)
-        public async Task<List<Order>> GetOrders(string symbolName)
+        public async Task<List<Order>> GetOrders(string symbolName = null)
         {
-            var request = new RestRequest("/api/2/order", Method.Get);
-            request.AddQueryParameter("symbol", symbolName);
-            return await _hitBtcRestApi.Execute(request);
+            var request = new RestRequest("/api/3/spot/order", Method.Get);
+            AddOptionalQuery(request, "symbol", symbolName);
+            return await _api.Execute(request);
         }
 
-        /// <summary>
-        /// Create new order
-        /// </summary>
-        /// <param name="symbolName"> Trading symbol</param>
-        /// <param name="quantity"> Order quantity</param>
-        /// <param name="side">sell buy</param>
-        /// <param name="type"></param>
-        /// <param name="timeInForce">Time in force is a special instruction used when placing a trade to indicate how long an order will remain active before it is executed or expires </param>
-        /// <param name="price"></param>
-        /// <param name="stopPrice"></param>
-        /// <param name="expireTime"></param>
-        /// <param name="clientOrderId">Unique identifier for Order as assigned by trader. Uniqueness must be guaranteed within a single trading day, including all active orders.</param>
-        /// <param name="strictValidate"></param>
-        /// <returns></returns>
         public async Task<Order> PostOrders(string symbolName, string quantity,
             PublicEnum.EnTradingSide side = PublicEnum.EnTradingSide.buy,
             PublicEnum.EnTradingType type = PublicEnum.EnTradingType.limit,
@@ -72,119 +37,95 @@ namespace Hitbtc.HitBtcCategories
             string price = null, string stopPrice = null, string expireTime = null,
             string clientOrderId = null, bool strictValidate = false)
         {
-            var request = new RestRequest("/api/2/order", Method.Post);
-            request.AddParameter("symbol", symbolName);
-            request.AddParameter("quantity", quantity);
-            request.AddParameter("side", side.ToString());
-            request.AddParameter("type", type.ToString());
-            request.AddParameter("timeInForce", timeInForce.ToString());
-            if (!string.IsNullOrEmpty(price))
-                request.AddParameter("price", price);
-            if (!string.IsNullOrEmpty(stopPrice))
-                request.AddParameter("stopPrice", stopPrice);
-            if (!string.IsNullOrEmpty(expireTime))
-                request.AddParameter("expireTime", expireTime);
-            if (!string.IsNullOrEmpty(clientOrderId))
-                request.AddParameter("clientOrderId", clientOrderId);
-            request.AddParameter("strictValidate", strictValidate);
-            return await _hitBtcRestApi.Execute(request);
+            var request = CreateOrderRequest("/api/3/spot/order", Method.Post, symbolName, quantity,
+                side, type, timeInForce, price, stopPrice, expireTime, strictValidate);
+            AddOptionalBody(request, "client_order_id", clientOrderId);
+            return await _api.Execute(request);
         }
 
-        /// <summary>
-        /// Cancel all open orders
-        /// </summary>
-        /// <param name="symbolName"></param>
-        /// <returns></returns>
-        public async Task<List<Order>> DeleteOrders(string symbolName)
+        public async Task<List<Order>> DeleteOrders(string symbolName = null)
         {
-            var request = new RestRequest("/api/2/order", Method.Delete);
-            request.AddQueryParameter("symbol", symbolName);
-            return await _hitBtcRestApi.Execute(request);
+            var request = new RestRequest("/api/3/spot/order", Method.Delete);
+            AddOptionalQuery(request, "symbol", symbolName);
+            return await _api.Execute(request);
         }
 
-
-        /// <summary>
-        /// Get a single order by clientOrderId
-        /// </summary>
-        /// <param name="clientOrderId"></param>
-        /// <param name="wait">Optional parameter. Time in milliseconds. Max 60000. </param>
-        /// <returns></returns>
         public async Task<Order> GetOrder(string clientOrderId, int wait = 0)
         {
-            var request = new RestRequest("/api/2/order/{clientOrderId}", Method.Get);
-            request.AddParameter("clientOrderId", clientOrderId, ParameterType.UrlSegment);
-            if (wait > 0)
-                request.AddQueryParameter("wait", wait.ToString());
-            return await _hitBtcRestApi.Execute(request);
+            return await _api.Execute(OrderRequest(clientOrderId, Method.Get));
         }
 
-        /// <summary>
-        /// Create new order
-        /// </summary>
-        /// <param name="symbolName"> Trading symbol</param>
-        /// <param name="quantity"> Order quantity</param>
-        /// <param name="side">sell buy</param>
-        /// <param name="type"></param>
-        /// <param name="timeInForce">Time in force is a special instruction used when placing a trade to indicate how long an order will remain active before it is executed or expires </param>
-        /// <param name="price"></param>
-        /// <param name="stopPrice"></param>
-        /// <param name="expireTime"></param>
-        /// <param name="clientOrderId">Unique identifier for Order as assigned by trader. Uniqueness must be guaranteed within a single trading day, including all active orders.</param>
-        /// <param name="strictValidate"></param>
-        /// <returns></returns>
-        public async Task<Order> PutOrder(string clientOrderId ,string symbolName, string quantity,
+        public async Task<Order> PutOrder(string clientOrderId, string symbolName, string quantity,
             PublicEnum.EnTradingSide side = PublicEnum.EnTradingSide.buy,
             PublicEnum.EnTradingType type = PublicEnum.EnTradingType.limit,
             PublicEnum.EnTradingTimeInForce timeInForce = PublicEnum.EnTradingTimeInForce.GTC,
-            string price = null, string stopPrice = null, string expireTime = null, bool strictValidate = false)
+            string price = null, string stopPrice = null, string expireTime = null,
+            bool strictValidate = false)
         {
-            var request = new RestRequest("/api/2/order/{clientOrderId}", Method.Put);
+            var request = CreateOrderRequest("/api/3/spot/order/{clientOrderId}", Method.Put, symbolName,
+                quantity, side, type, timeInForce, price, stopPrice, expireTime, strictValidate);
             request.AddParameter("clientOrderId", clientOrderId, ParameterType.UrlSegment);
-            request.AddParameter("symbol", symbolName);
-            request.AddParameter("quantity", quantity);
-            request.AddParameter("side", side.ToString());
-            request.AddParameter("type", type.ToString());
-            request.AddParameter("timeInForce", timeInForce.ToString());
-            if (!string.IsNullOrEmpty(price))
-                request.AddParameter("price", price);
-            if (!string.IsNullOrEmpty(stopPrice))
-                request.AddParameter("stopPrice", stopPrice);
-            if (!string.IsNullOrEmpty(expireTime))
-                request.AddParameter("expireTime", expireTime);
-            request.AddParameter("strictValidate", strictValidate);
-            return await _hitBtcRestApi.Execute(request);
+            return await _api.Execute(request);
         }
 
-        /// <summary>
-        /// Cancel all open orders
-        /// </summary>
-        /// <param name="clientOrderId"></param>
-        /// <returns></returns>
         public async Task<Order> DeleteOrder(string clientOrderId)
         {
-            var request = new RestRequest("/api/2/order/{clientOrderId}", Method.Delete);
-            request.AddParameter("clientOrderId", clientOrderId, ParameterType.UrlSegment);
-            return await _hitBtcRestApi.Execute(request);
+            return await _api.Execute(OrderRequest(clientOrderId, Method.Delete));
         }
 
-        /// <summary>
-        /// Cancel Replace order
-        /// </summary>
-        /// <param name="clientOrderId"></param>
-        /// <param name="quantity"></param>
-        /// <param name="requestClientId"></param>
-        /// <param name="price"></param>
-        /// <returns></returns>
-        public async Task<Order> PatchOrder(string clientOrderId, string quantity, string requestClientId,
-            string price = null)
+        public async Task<Order> PatchOrder(string clientOrderId, string quantity,
+            string requestClientId, string price = null)
         {
-            var request = new RestRequest("/api/2/order/{clientOrderId}", Method.Patch);
-            request.AddParameter("clientOrderId", clientOrderId, ParameterType.UrlSegment);
+            var request = OrderRequest(clientOrderId, Method.Patch);
+            AddOptionalBody(request, "quantity", quantity);
+            AddOptionalBody(request, "new_client_order_id", requestClientId);
+            AddOptionalBody(request, "price", price);
+            return await _api.Execute(request);
+        }
+
+        private static RestRequest CreateOrderRequest(string resource, Method method, string symbol,
+            string quantity, PublicEnum.EnTradingSide side, PublicEnum.EnTradingType type,
+            PublicEnum.EnTradingTimeInForce timeInForce, string price, string stopPrice,
+            string expireTime, bool strictValidate)
+        {
+            var request = new RestRequest(resource, method);
+            request.AddParameter("symbol", symbol);
             request.AddParameter("quantity", quantity);
-            request.AddParameter("requestClientId", requestClientId);
-            if (!string.IsNullOrEmpty(price))
-                request.AddParameter("price", price);
-            return await _hitBtcRestApi.Execute(request);
+            request.AddParameter("side", side.ToString());
+            request.AddParameter("type", ToApiValue(type));
+            request.AddParameter("time_in_force", timeInForce.ToString());
+            AddOptionalBody(request, "price", price);
+            AddOptionalBody(request, "stop_price", stopPrice);
+            AddOptionalBody(request, "expire_time", expireTime);
+            request.AddParameter("strict_validate", strictValidate.ToString().ToLowerInvariant());
+            return request;
+        }
+
+        private static RestRequest OrderRequest(string clientOrderId, Method method)
+        {
+            var request = new RestRequest("/api/3/spot/order/{clientOrderId}", method);
+            request.AddParameter("clientOrderId", clientOrderId, ParameterType.UrlSegment);
+            return request;
+        }
+
+        private static string ToApiValue(PublicEnum.EnTradingType type)
+        {
+            switch (type)
+            {
+                case PublicEnum.EnTradingType.stopLimit: return "stop_limit";
+                case PublicEnum.EnTradingType.stopMarket: return "stop_market";
+                default: return type.ToString();
+            }
+        }
+
+        private static void AddOptionalBody(RestRequest request, string name, string value)
+        {
+            if (!string.IsNullOrWhiteSpace(value)) request.AddParameter(name, value);
+        }
+
+        private static void AddOptionalQuery(RestRequest request, string name, string value)
+        {
+            if (!string.IsNullOrWhiteSpace(value)) request.AddQueryParameter(name, value);
         }
     }
 }

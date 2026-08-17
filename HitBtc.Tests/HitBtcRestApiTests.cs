@@ -36,7 +36,7 @@ namespace Hitbtc.Tests
         public async Task Execute_AuthenticatedRequestWithoutAuthorization_ThrowsBeforeNetworkCall()
         {
             var api = new HitBtcRestApi();
-            var request = new RestRequest("/api/2/trading/balance", Method.Get);
+            var request = new RestRequest("/api/3/spot/balance", Method.Get);
 
             var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => api.Execute(request));
 

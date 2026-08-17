@@ -41,6 +41,15 @@ namespace Hitbtc
             return result;
         }
 
+        public static Dictionary<string, T> ConvertDictionaryFromJson<T>(ApiResponse response) where T : class
+        {
+            EnsureResponseContent(response);
+            var result = JsonConvert.DeserializeObject<Dictionary<string, T>>(response.Content);
+            if (result == null)
+                throw new JsonSerializationException("The API response JSON contained no dictionary.");
+            return result;
+        }
+
         private static void EnsureResponseContent(ApiResponse response)
         {
             if (response == null)

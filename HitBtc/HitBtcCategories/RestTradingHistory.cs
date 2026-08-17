@@ -1,87 +1,59 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Hitbtc.HitBtcModel;
 using RestSharp;
 
 namespace Hitbtc.HitBtcCategories
 {
+    /// <summary>Spot order and trade history for HitBTC API v3.</summary>
     public class RestTradingHistory
     {
-        private readonly HitBtcRestApi _hitBtcRestApi;
+        private readonly HitBtcRestApi _api;
+        public RestTradingHistory(HitBtcRestApi api) { _api = api; }
 
-        public RestTradingHistory(HitBtcRestApi hitBtcRestApi)
+        public async Task<List<TradeHistory>> GetTraders(string symoblName, string from,
+            string till, int offset, int limit = 100,
+            PublicEnum.EnSort sort = PublicEnum.EnSort.Desc,
+            PublicEnum.EnBy by = PublicEnum.EnBy.timestamp)
         {
-            _hitBtcRestApi = hitBtcRestApi;
+            var request = HistoryRequest("/api/3/spot/history/trade", symoblName, from, till,
+                offset, limit, sort, by);
+            return await _api.Execute(request);
         }
 
-        /// <summary>
-        /// Get historical trades
-        /// </summary>
-        /// <param name="symoblName"></param>
-        /// <param name="sort">Sort direction</param>
-        /// <param name="by">Filter field</param>
-        /// <param name="from">If filter by timestamp, then datetime in iso format or timestamp in millisecond otherwise trade id</param>
-        /// <param name="till">If filter by timestamp, then datetime in iso format or timestamp in millisecond otherwise trade id</param>
-        /// <param name="offset"></param>
-        /// <param name="limit"></param>
-        /// <returns></returns>
-        public async Task<List<TradeHistory>> GetTraders(string symoblName, string from, string till, int offset, int limit = 100,
-            PublicEnum.EnSort sort = PublicEnum.EnSort.Desc, PublicEnum.EnBy by = PublicEnum.EnBy.timestamp)
+        public async Task<List<Order>> GetOrder(string symoblName, string clientOrderId,
+            string from, string till, int offset, int limit = 100)
         {
-            var request = new RestRequest("/api/2/history/trades");
-            if (!string.IsNullOrEmpty(symoblName))
-                request.AddQueryParameter("symbol", symoblName);
-
-            request.AddQueryParameter("sort", sort.ToString());
-
-            request.AddQueryParameter("by", by.ToString());
-
-            if (!string.IsNullOrEmpty(from))
-                request.AddQueryParameter("from", from);
-            if (!string.IsNullOrEmpty(till))
-                request.AddQueryParameter("till", till);
-            if (offset > 0)
-                request.AddQueryParameter("offset", offset.ToString());
-            if (limit > 0)
-                request.AddQueryParameter("limit", limit.ToString());
-
-            return await _hitBtcRestApi.Execute(request);
+            var request = HistoryRequest("/api/3/spot/history/order", symoblName, from, till,
+                offset, limit, PublicEnum.EnSort.Desc, PublicEnum.EnBy.timestamp);
+            AddOptional(request, "client_order_id", clientOrderId);
+            return await _api.Execute(request);
         }
 
-        /// <summary>
-        /// Get historical orders
-        /// </summary>
-        /// <returns></returns>
-        public async Task<List<Order>> GetOrder(string symoblName, string clientOrderId, string from, string till,
-            int offset, int limit = 100)
-        {
-
-            var request = new RestRequest("/api/2/history/order");
-            if (!string.IsNullOrEmpty(symoblName))
-                request.AddQueryParameter("symbol", symoblName);
-            if (!string.IsNullOrEmpty(clientOrderId))
-                request.AddQueryParameter("clientOrderId", clientOrderId);
-            if (!string.IsNullOrEmpty(from))
-                request.AddQueryParameter("from", from);
-            if (!string.IsNullOrEmpty(till))
-                request.AddQueryParameter("till", till);
-            if (offset > 0)
-                request.AddQueryParameter("offset", offset.ToString());
-            if (limit > 0)
-                request.AddQueryParameter("limit", limit.ToString());
-
-            return await _hitBtcRestApi.Execute(request);
-        }
-
-        /// <summary>
-        /// Get historical trades by specified order
-        /// </summary>
-        /// <returns></returns>
         public async Task<List<TradeHistory>> GetTradersByOrder(string orderId)
         {
-            var request = new RestRequest("/api/2/history/order/{orderId}/trades");
-            request.AddParameter("orderId", orderId, ParameterType.UrlSegment);
-            return await _hitBtcRestApi.Execute(request);
+            var request = new RestRequest("/api/3/spot/history/trade");
+            request.AddQueryParameter("order_id", orderId);
+            return await _api.Execute(request);
+        }
+
+        private static RestRequest HistoryRequest(string resource, string symbol, string from,
+            string till, int offset, int limit, PublicEnum.EnSort sort, PublicEnum.EnBy by)
+        {
+            var request = new RestRequest(resource);
+            AddOptional(request, "symbol", symbol);
+            AddOptional(request, "from", from);
+            AddOptional(request, "till", till);
+            request.AddQueryParameter("sort", sort.ToString().ToUpperInvariant());
+            request.AddQueryParameter("by", by.ToString());
+            if (offset > 0) request.AddQueryParameter("offset", offset.ToString());
+            if (limit > 0) request.AddQueryParameter("limit", limit.ToString());
+            return request;
+        }
+
+        private static void AddOptional(RestRequest request, string name, string value)
+        {
+            if (!string.IsNullOrWhiteSpace(value)) request.AddQueryParameter(name, value);
         }
     }
 }

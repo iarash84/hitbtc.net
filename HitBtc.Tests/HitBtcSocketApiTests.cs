@@ -90,6 +90,57 @@ namespace Hitbtc.Tests
         }
 
         [Fact]
+        public async Task ListenForNotifications_PublicMessage_RaisesTypedEvent()
+        {
+            var socket = new FakeWebSocketClient();
+            socket.EnqueueText("{\"result\":\"ok\",\"id\":7}");
+            socket.EnqueueText("{\"ch\":\"ticker/1s\",\"data\":{\"BTCUSDT\":{\"last\":\"100\"}}}");
+            using (var source = new CancellationTokenSource())
+            using (var api = new HitBtcSocketApi(socket))
+            {
+                HitBtcNotificationEventArgs received = null;
+                api.NotificationReceived += (sender, args) =>
+                {
+                    received = args;
+                    source.Cancel();
+                };
+
+                await api.MarketData.SubscribeTicker("BTCUSDT", 7);
+                await api.ListenForNotificationsAsync(false, source.Token);
+
+                Assert.NotNull(received);
+                Assert.Equal("ticker/1s", received.Channel);
+                Assert.Equal("100", received.Data["BTCUSDT"]["last"].ToObject<string>());
+                Assert.Contains("BTCUSDT", received.RawJson);
+            }
+        }
+
+        [Fact]
+        public async Task ListenForNotifications_MalformedMessage_ThrowsTypedException()
+        {
+            var socket = new FakeWebSocketClient();
+            socket.EnqueueText("not-json");
+            using (var api = new HitBtcSocketApi(socket))
+            using (var source = new CancellationTokenSource(TimeSpan.FromSeconds(5)))
+            {
+                await Assert.ThrowsAsync<HitBtcWebSocketException>(
+                    () => api.ListenForNotificationsAsync(false, source.Token));
+            }
+        }
+
+        [Fact]
+        public async Task ListenForNotifications_AuthenticatedWithoutCredentials_ThrowsBeforeConnecting()
+        {
+            var socket = new FakeWebSocketClient();
+            using (var api = new HitBtcSocketApi(socket))
+            {
+                await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                    api.ListenForNotificationsAsync(true, CancellationToken.None));
+                Assert.Equal(0, socket.ConnectCount);
+            }
+        }
+
+        [Fact]
         public async Task TradingCommand_UsesTradingEndpointAndSnakeCaseMethod()
         {
             var publicSocket = new FakeWebSocketClient();

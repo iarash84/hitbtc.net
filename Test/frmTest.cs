@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Threading;
 using System.Windows.Forms;
 using Hitbtc;
 using Hitbtc.HitBtcModel;
@@ -96,10 +97,35 @@ namespace Test
             await RunOperation("Subscribe ticker WebSocket", (Button)sender, async () =>
             {
                 using (var api = new HitBtcSocketApi())
+                using (var stop = new CancellationTokenSource(TimeSpan.FromSeconds(10)))
                 {
+                    var notifications = new List<NotificationRow>();
+                    var notificationLock = new object();
+                    api.NotificationReceived += (notificationSender, notification) =>
+                    {
+                        List<NotificationRow> snapshot;
+                        lock (notificationLock)
+                        {
+                            notifications.Add(new NotificationRow(notification.Channel,
+                                notification.Method, notification.RawJson));
+                            snapshot = notifications.ToList();
+                        }
+                        BeginInvoke(new Action(() =>
+                        {
+                            BindResult(snapshot);
+                            WriteLog(LogLevel.Success, "WebSocket notification received from " +
+                                (notification.Channel ?? notification.Method ?? "unknown channel") + ".");
+                        }));
+                    };
                     var acknowledgement = await api.MarketData.SubscribeTicker(Symbol);
-                    WriteLog(LogLevel.Info, "Subscription acknowledgement received; this console does not keep a streaming listener open.");
-                    return acknowledgement;
+                    WriteLog(LogLevel.Info, "Subscription acknowledged. Listening for notifications for 10 seconds.");
+                    await api.ListenForNotificationsAsync(false, stop.Token);
+                    lock (notificationLock)
+                    {
+                        return notifications.Count == 0
+                            ? (object)new[] { acknowledgement }
+                            : notifications.ToList();
+                    }
                 }
             });
         }
@@ -339,6 +365,22 @@ namespace Test
             public string Price { get; }
             public string Size { get; }
             public string Timestamp { get; }
+        }
+
+        private sealed class NotificationRow
+        {
+            public NotificationRow(string channel, string method, string rawJson)
+            {
+                ReceivedAt = DateTime.Now;
+                Channel = channel;
+                Method = method;
+                RawJson = rawJson;
+            }
+
+            public DateTime ReceivedAt { get; }
+            public string Channel { get; }
+            public string Method { get; }
+            public string RawJson { get; }
         }
     }
 }

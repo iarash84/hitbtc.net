@@ -81,6 +81,7 @@
   <ItemGroup>
     <Compile Include="ApiResponse.cs" />
     <Compile Include="HitBtcApiException.cs" />
+    <Compile Include="HitBtcNotificationEventArgs.cs" />
     <Compile Include="HitBtcCategories\RestAccount.cs" />
     <Compile Include="HitBtcCategories\SocketMarketData.cs" />
     <Compile Include="HitBtcCategories\RestPublicData.cs" />

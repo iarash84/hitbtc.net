@@ -29,6 +29,9 @@ namespace Hitbtc
         public SocketTrading Trading { get; set; }
         public bool IsAuthorized { get; private set; }
 
+        /// <summary>Raised for every message read by <see cref="ListenForNotificationsAsync"/>.</summary>
+        public event EventHandler<HitBtcNotificationEventArgs> NotificationReceived;
+
         public HitBtcSocketApi() : this(new WebSocketClientAdapter(), new WebSocketClientAdapter()) { }
 
         internal HitBtcSocketApi(IWebSocketClient clientWebSocket) : this(clientWebSocket, clientWebSocket) { }
@@ -43,6 +46,65 @@ namespace Hitbtc
 
         public Task<ApiResponse> Execute(string request, bool requireAuthentication = true) =>
             Execute(request, requireAuthentication, CancellationToken.None);
+
+        /// <summary>
+        /// Continuously receives notifications on an already subscribed connection until cancellation.
+        /// Commands and this listener are serialized per connection to prevent concurrent receives.
+        /// </summary>
+        /// <param name="requireAuthentication">Use the authenticated trading connection when true.</param>
+        /// <param name="cancellationToken">Stops the receive loop without closing the client.</param>
+        public async Task ListenForNotificationsAsync(bool requireAuthentication,
+            CancellationToken cancellationToken)
+        {
+            ThrowIfDisposed();
+            if (requireAuthentication && !IsAuthorized)
+                throw new InvalidOperationException("The listener requires authorization. Call Authorize first.");
+
+            var socket = requireAuthentication ? _tradingSocket : _publicSocket;
+            var operationLock = requireAuthentication ? _tradingLock : _publicLock;
+            await operationLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+            try
+            {
+                await EnsureConnected(socket, requireAuthentication, cancellationToken).ConfigureAwait(false);
+                if (requireAuthentication && !_connectionAuthenticated)
+                    await Authenticate(socket, cancellationToken).ConfigureAwait(false);
+
+                while (true)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    var content = await Receive(socket, cancellationToken).ConfigureAwait(false);
+                    JObject message;
+                    try
+                    {
+                        message = JObject.Parse(content);
+                    }
+                    catch (Newtonsoft.Json.JsonException exception)
+                    {
+                        throw new HitBtcWebSocketException(
+                            "HitBTC returned malformed notification JSON.", null, exception);
+                    }
+
+                    if (message["error"] != null)
+                        throw CreateWebSocketError(message, "HitBTC WebSocket notification failed.");
+
+                    OnNotificationReceived(new HitBtcNotificationEventArgs(content, message));
+                }
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                // Cancellation is the normal way to stop a long-running notification listener.
+            }
+            finally
+            {
+                operationLock.Release();
+            }
+        }
+
+        private void OnNotificationReceived(HitBtcNotificationEventArgs eventArgs)
+        {
+            var handler = NotificationReceived;
+            if (handler != null) handler(this, eventArgs);
+        }
 
         /// <summary>
         /// Sends one JSON-RPC request. Operations are serialized because receives on one socket cannot safely run concurrently.

@@ -136,9 +136,24 @@ queries. The corresponding legacy methods are retained as obsolete members and
 throw `NotSupportedException` so that migration failures are explicit.
 Malformed messages, exchange errors, and mismatched response IDs throw
 `HitBtcWebSocketException`. The current high-level subscription methods return
-the subscription acknowledgement; applications that need a continuous event
-stream should use the low-level protocol carefully until a notification API is
-added.
+the subscription acknowledgement. After subscribing, attach a
+`NotificationReceived` handler and run `ListenForNotificationsAsync` with a
+cancellation token to consume the continuous stream:
+
+```csharp
+using (var api = new HitBtcSocketApi())
+using (var stop = new CancellationTokenSource())
+{
+    api.NotificationReceived += (sender, notification) =>
+        Console.WriteLine(notification.RawJson);
+
+    await api.MarketData.SubscribeTicker("BTCUSDT");
+    await api.ListenForNotificationsAsync(false, stop.Token);
+}
+```
+
+Commands and the listener are serialized on each connection, so complete all
+subscriptions before starting the long-running listener.
 
 ## Migrating from API v2 to API v3
 
@@ -362,7 +377,7 @@ using (var api = new HitBtcSocketApi())
 
 نسخهٔ ۳ از اتصال‌های جداگانه برای داده‌های عمومی و عملیات معاملاتی استفاده می‌کند. درخواست‌های یک‌بارهٔ ارزها، نمادها و تاریخچهٔ معاملات دیگر از طریق WebSocket ارائه نمی‌شوند و باید از `HitBtcRestApi.PublicData` یا `HitBtcRestApi.TradingHistory` استفاده شود.
 
-پاسخ JSON نامعتبر، خطای سرور یا شناسهٔ نامنطبق با `HitBtcWebSocketException` گزارش می‌شود. متدهای فعلی اشتراک فقط تأیید اشتراک را برمی‌گردانند و هنوز API سطح‌بالایی برای دریافت پیوستهٔ notificationها ارائه نشده است.
+پاسخ JSON نامعتبر، خطای سرور یا شناسهٔ نامنطبق با `HitBtcWebSocketException` گزارش می‌شود. پس از دریافت تأیید اشتراک، با event به نام `NotificationReceived` و متد `ListenForNotificationsAsync` می‌توان notificationها را تا زمان لغو شدن `CancellationToken` به‌صورت پیوسته دریافت کرد. تمام subscriptionها را پیش از شروع listener اجرا کنید، زیرا commandها و دریافت پیوسته روی هر اتصال به‌صورت سریال اجرا می‌شوند.
 
 ## تفاوت نسخهٔ ۲ و ۳
 

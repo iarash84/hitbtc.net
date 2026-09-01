@@ -64,8 +64,12 @@ namespace Hitbtc
             CancellationToken cancellationToken)
         {
             ThrowIfDisposed();
+#if NET8_0_OR_GREATER
+            ArgumentNullException.ThrowIfNull(request);
+#else
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
+#endif
             if (requireAuthentication && !IsAuthorized)
                 throw new InvalidOperationException("The request requires authorization. Call Authorize first.");
 
@@ -100,13 +104,13 @@ namespace Hitbtc
 
         private static (string? Code, string Message)? TryReadApiError(string? content)
         {
-            if (string.IsNullOrWhiteSpace(content)) return null;
+            if (content == null || string.IsNullOrWhiteSpace(content)) return null;
             try
             {
                 var root = JObject.Parse(content);
                 var error = root["error"] as JObject ?? root;
                 var message = error.Value<string>("message") ?? error.Value<string>("description");
-                if (string.IsNullOrWhiteSpace(message)) return null;
+                if (message == null || string.IsNullOrWhiteSpace(message)) return null;
                 return (error.Value<string>("code"), message);
             }
             catch (Newtonsoft.Json.JsonException)
@@ -146,7 +150,11 @@ namespace Hitbtc
 
         private void ThrowIfDisposed()
         {
+#if NET8_0_OR_GREATER
+            ObjectDisposedException.ThrowIf(_disposed, this);
+#else
             if (_disposed) throw new ObjectDisposedException(nameof(HitBtcRestApi));
+#endif
         }
 
     }

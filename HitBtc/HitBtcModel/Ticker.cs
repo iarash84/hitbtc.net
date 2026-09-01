@@ -66,16 +66,16 @@ namespace Hitbtc.HitBtcModel
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine(string.Format("ask:{0}", Ask));
-            sb.AppendLine(string.Format("bid:{0}", Bid));
-            sb.AppendLine(string.Format("last:{0}",Last));
-            sb.AppendLine(string.Format("open:{0}", Open));
-            sb.AppendLine(string.Format("low:{0}", Low));
-            sb.AppendLine(string.Format("high:{0}", High));
-            sb.AppendLine(string.Format("volume:{0}", Volume));
-            sb.AppendLine(string.Format("volume_quote:{0}", VolumeQuote));
-            sb.AppendLine(string.Format("timestamp:{0}", Timestamp));
-            sb.AppendLine(string.Format("symbol:{0}", Symbol));
+            sb.Append("ask:").AppendLine(Ask);
+            sb.Append("bid:").AppendLine(Bid);
+            sb.Append("last:").AppendLine(Last);
+            sb.Append("open:").AppendLine(Open);
+            sb.Append("low:").AppendLine(Low);
+            sb.Append("high:").AppendLine(High);
+            sb.Append("volume:").AppendLine(Volume);
+            sb.Append("volume_quote:").AppendLine(VolumeQuote);
+            sb.Append("timestamp:").AppendLine(Timestamp);
+            sb.Append("symbol:").AppendLine(Symbol);
 
             return sb.ToString();
         }

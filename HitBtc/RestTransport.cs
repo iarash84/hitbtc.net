@@ -25,7 +25,7 @@ namespace Hitbtc
             RestClient client;
             lock (_sync)
             {
-                if (_disposed) throw new ObjectDisposedException(nameof(RestSharpTransport));
+                ThrowIfDisposed();
                 if (options.Authenticator == null)
                     client = _publicClient ?? (_publicClient = new RestClient(options));
                 else
@@ -38,7 +38,7 @@ namespace Hitbtc
         {
             lock (_sync)
             {
-                if (_disposed) throw new ObjectDisposedException(nameof(RestSharpTransport));
+                ThrowIfDisposed();
                 _authenticatedClient?.Dispose();
                 _authenticatedClient = null;
             }
@@ -55,6 +55,15 @@ namespace Hitbtc
                 _authenticatedClient = null;
                 _disposed = true;
             }
+        }
+
+        private void ThrowIfDisposed()
+        {
+#if NET8_0_OR_GREATER
+            ObjectDisposedException.ThrowIf(_disposed, this);
+#else
+            if (_disposed) throw new ObjectDisposedException(nameof(RestSharpTransport));
+#endif
         }
     }
 }

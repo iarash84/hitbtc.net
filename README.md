@@ -239,14 +239,16 @@ Every push runs `.github/workflows/build-test-release.yml`. A successful run:
 1. restores NuGet dependencies;
 2. builds the solution in Release mode;
 3. runs the automated tests;
-4. uploads `Hitbtc.dll` and its runtime dependencies as a GitHub Actions artifact.
+4. uploads separate `net48` and `net8.0` directories containing `Hitbtc.dll` and
+   the runtime dependencies for each target as a GitHub Actions artifact.
 
 The artifact name contains the commit SHA and is retained for 30 days. Artifacts
 from ordinary pushes are build outputs; they are not permanent GitHub Releases.
 
 ## Creating a new release
 
-Releases use semantic version tags such as `v1.1.0`:
+The current release candidate is `2.1.0`. Releases use matching semantic version
+tags such as `v2.1.0`:
 
 - increment the major version for breaking public API changes;
 - increment the minor version for backward-compatible features;
@@ -265,14 +267,14 @@ Then synchronize `master`, create an annotated tag, and push the tag:
 git switch master
 git pull --ff-only origin master
 
-git tag -a v1.1.0 -m "Release v1.1.0"
-git push origin v1.1.0
+git tag -a v2.1.0 -m "Release v2.1.0"
+git push origin v2.1.0
 ```
 
 Pushing the tag triggers the workflow. After the build and tests pass, it:
 
 1. collects the Release DLL files;
-2. creates `Hitbtc-v1.1.0.zip`;
+2. creates `Hitbtc-v2.1.0.zip` with separate `net48` and `net8.0` directories;
 3. creates the GitHub Release from the tag;
 4. attaches the ZIP file and generated release notes.
 
@@ -427,7 +429,7 @@ dotnet run --project Test/Test.csproj
 
 ## روند توسعه و انتشار
 
-شاخهٔ `master` محافظت‌شده است. تغییرات را در یک شاخهٔ feature انجام دهید، تست‌ها را اجرا کنید و سپس Pull Request بسازید. برای انتشار نسخهٔ جدید، پس از ادغام تغییرات و موفقیت CI یک تگ معنایی مانند `v1.1.0` ایجاد و push کنید. workflow فایل Release را می‌سازد و ZIP خروجی را به GitHub Release متصل می‌کند.
+شاخهٔ `master` محافظت‌شده است. تغییرات را در یک شاخهٔ feature انجام دهید، تست‌ها را اجرا کنید و سپس Pull Request بسازید. نسخهٔ آمادهٔ انتشار فعلی `2.1.0` است. پس از ادغام تغییرات و موفقیت CI تگ `v2.1.0` را ایجاد و push کنید. workflow خروجی‌های جداگانهٔ `net48` و `net8.0` را در ZIP قرار می‌دهد و آن را به GitHub Release متصل می‌کند.
 
 ## مشارکت و امنیت
 

@@ -3,7 +3,9 @@
     <TargetFrameworks>net48;net8.0</TargetFrameworks>
     <RootNamespace>Hitbtc</RootNamespace>
     <AssemblyName>Hitbtc</AssemblyName>
+    <Version>2.1.0</Version>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>

@@ -17,6 +17,8 @@ namespace Test
     {
         private const string ApiKeyVariable = "HITBTC_API_KEY";
         private const string SecretKeyVariable = "HITBTC_SECRET_KEY";
+        private readonly HitBtcRestApi _restApi = new HitBtcRestApi();
+        private readonly CancellationTokenSource _formLifetime = new CancellationTokenSource();
 
         public frmTest()
         {
@@ -38,7 +40,7 @@ namespace Test
         {
             await RunOperation("Get ticker", (Button)sender, async () =>
             {
-                using (var api = new HitBtcRestApi()) return await api.PublicData.GetTicker(Symbol);
+                return await _restApi.PublicData.GetTicker(Symbol);
             });
         }
 
@@ -46,7 +48,7 @@ namespace Test
         {
             await RunOperation("Get symbols", (Button)sender, async () =>
             {
-                using (var api = new HitBtcRestApi()) return await api.PublicData.GetSymbol();
+                return await _restApi.PublicData.GetSymbol();
             });
         }
 
@@ -54,7 +56,7 @@ namespace Test
         {
             await RunOperation("Get currencies", (Button)sender, async () =>
             {
-                using (var api = new HitBtcRestApi()) return await api.PublicData.GetCurrency();
+                return await _restApi.PublicData.GetCurrency();
             });
         }
 
@@ -62,8 +64,7 @@ namespace Test
         {
             await RunOperation("Get order book", (Button)sender, async () =>
             {
-                using (var api = new HitBtcRestApi())
-                    return ToOrderBookRows(await api.PublicData.GetOrderbook(Symbol, 25));
+                return ToOrderBookRows(await _restApi.PublicData.GetOrderbook(Symbol, 25));
             });
         }
 
@@ -71,8 +72,7 @@ namespace Test
         {
             await RunOperation("Get M30 candles", (Button)sender, async () =>
             {
-                using (var api = new HitBtcRestApi())
-                    return await api.PublicData.GetCandles(Symbol, PublicEnum.EnPeriod.M30);
+                return await _restApi.PublicData.GetCandles(Symbol, PublicEnum.EnPeriod.M30);
             });
         }
 
@@ -80,7 +80,8 @@ namespace Test
         {
             await RunOperation("Get spot balance", (Button)sender, async () =>
             {
-                using (var api = CreateAuthorizedRestClient()) return await api.Trading.GetBalance();
+                AuthorizeRestClient();
+                return await _restApi.Trading.GetBalance();
             });
         }
 
@@ -88,7 +89,8 @@ namespace Test
         {
             await RunOperation("Get active orders", (Button)sender, async () =>
             {
-                using (var api = CreateAuthorizedRestClient()) return await api.Trading.GetOrders(Symbol);
+                AuthorizeRestClient();
+                return await _restApi.Trading.GetOrders(Symbol);
             });
         }
 
@@ -96,8 +98,8 @@ namespace Test
         {
             await RunOperation("Get trade history", (Button)sender, async () =>
             {
-                using (var api = CreateAuthorizedRestClient())
-                    return await api.TradingHistory.GetTraders(Symbol, null, null, 0, 100);
+                AuthorizeRestClient();
+                return await _restApi.TradingHistory.GetTraders(Symbol, null, null, 0, 100);
             });
         }
 
@@ -105,7 +107,8 @@ namespace Test
         {
             await RunOperation("Get wallet balance", (Button)sender, async () =>
             {
-                using (var api = CreateAuthorizedRestClient()) return await api.Account.GetBalance();
+                AuthorizeRestClient();
+                return await _restApi.Account.GetBalance();
             });
         }
 
@@ -114,7 +117,9 @@ namespace Test
             await RunOperation("Subscribe ticker WebSocket", (Button)sender, async () =>
             {
                 using (var api = new HitBtcSocketApi())
-                using (var stop = new CancellationTokenSource(TimeSpan.FromSeconds(10)))
+                using (var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10)))
+                using (var stop = CancellationTokenSource.CreateLinkedTokenSource(
+                    timeout.Token, _formLifetime.Token))
                 {
                     var notifications = new List<NotificationRow>();
                     var notificationLock = new object();
@@ -229,12 +234,18 @@ namespace Test
             return rows;
         }
 
-        private HitBtcRestApi CreateAuthorizedRestClient()
+        private void AuthorizeRestClient()
         {
             EnsureCredentials();
-            var api = new HitBtcRestApi();
-            api.Authorize(txtApiKey.Text.Trim(), txtSecret.Text);
-            return api;
+            _restApi.Authorize(txtApiKey.Text.Trim(), txtSecret.Text);
+        }
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            _formLifetime.Cancel();
+            _restApi.Dispose();
+            _formLifetime.Dispose();
+            base.OnFormClosed(e);
         }
 
         private HitBtcSocketApi CreateAuthorizedSocketClient()

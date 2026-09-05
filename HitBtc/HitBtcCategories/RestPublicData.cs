@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Hitbtc.HitBtcModel;
 using RestSharp;
+using System.Globalization;
 
 namespace Hitbtc.HitBtcCategories
 {
@@ -54,7 +55,7 @@ namespace Hitbtc.HitBtcCategories
             return values.Values.ToList();
         }
 
-        public async Task<Ticker> GetTicker(string symbolName, string period = null, int limit = 0)
+        public async Task<Ticker> GetTicker(string symbolName, string? period = null, int limit = 0)
         {
             var request = new RestRequest("/api/3/public/ticker/{symbol}");
             request.AddParameter("symbol", symbolName, ParameterType.UrlSegment);
@@ -67,7 +68,7 @@ namespace Hitbtc.HitBtcCategories
         {
             var request = new RestRequest("/api/3/public/orderbook/{symbol}");
             request.AddParameter("symbol", symbolName, ParameterType.UrlSegment);
-            if (limit > 0) request.AddQueryParameter("depth", limit.ToString());
+            if (limit > 0) request.AddQueryParameter("depth", limit.ToString(CultureInfo.InvariantCulture));
             return await _api.Execute(request, false);
         }
 

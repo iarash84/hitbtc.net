@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 
+#nullable disable
 namespace Hitbtc.HitBtcModel
 {
     public class Error
@@ -12,7 +13,8 @@ namespace Hitbtc.HitBtcModel
         public string Description { get; set; }
         public override string ToString()
         {
-            return string.Format("{0} - {1} - {2}", Code, Message, Description);
+            return string.Format(System.Globalization.CultureInfo.InvariantCulture,
+                "{0} - {1} - {2}", Code, Message, Description);
         }
     }
 }

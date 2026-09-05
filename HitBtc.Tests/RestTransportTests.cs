@@ -99,6 +99,32 @@ namespace Hitbtc.Tests
             Assert.True(socketSetter.IsPrivate);
         }
 
+        [Fact]
+        public void Authorize_NewCredentials_ResetsAuthenticatedClient()
+        {
+            var transport = SuccessfulTransport();
+            var api = new HitBtcRestApi(transport);
+
+            api.Authorize("key-1", "secret-1");
+            api.Authorize("key-2", "secret-2");
+
+            Assert.Equal(2, transport.ResetCount);
+        }
+
+        [Fact]
+        public async Task Dispose_ThenExecute_DisposesTransportAndThrows()
+        {
+            var transport = SuccessfulTransport();
+            var api = new HitBtcRestApi(transport);
+
+            api.Dispose();
+
+            Assert.True(transport.Disposed);
+            Assert.False(api.IsAuthorized);
+            await Assert.ThrowsAsync<ObjectDisposedException>(() =>
+                api.Execute(new RestRequest("/api/3/public/ticker"), false));
+        }
+
         private static FakeRestTransport SuccessfulTransport()
         {
             return new FakeRestTransport(new RestResponse
@@ -116,6 +142,8 @@ namespace Hitbtc.Tests
             public FakeRestTransport(RestResponse response) { _response = response; }
             public RestClientOptions Options { get; private set; }
             public int CallCount { get; private set; }
+            public int ResetCount { get; private set; }
+            public bool Disposed { get; private set; }
 
             public Task<RestResponse> ExecuteAsync(RestRequest request, RestClientOptions options,
                 CancellationToken cancellationToken)
@@ -125,6 +153,9 @@ namespace Hitbtc.Tests
                 Options = options;
                 return Task.FromResult(_response);
             }
+
+            public void ResetAuthenticatedClient() => ResetCount++;
+            public void Dispose() => Disposed = true;
         }
     }
 }

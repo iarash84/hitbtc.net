@@ -5,6 +5,7 @@ using Hitbtc.HitBtcCategories;
 using RestSharp;
 using RestSharp.Authenticators;
 using Newtonsoft.Json.Linq;
+using System.Globalization;
 
 namespace Hitbtc
 {
@@ -21,12 +22,13 @@ namespace Hitbtc
     /// <summary>
     /// HitBTC API v3 client. See https://api.hitbtc.com/api/3/explore/.
     /// </summary>
-    public class HitBtcRestApi
+    public class HitBtcRestApi : IDisposable
     {
         private const string Url = "https://api.hitbtc.com";
-        private  string _apiKey;
-        private  string _secretKey;
+        private string? _apiKey;
+        private string? _secretKey;
         private readonly IRestTransport _transport;
+        private bool _disposed;
 
         public RestTrading Trading { get; set; }
         public RestAccount Account { get; set; }
@@ -61,15 +63,20 @@ namespace Hitbtc
         private async Task<ApiResponse> ExecuteCore(RestRequest request, bool requireAuthentication,
             CancellationToken cancellationToken)
         {
+            ThrowIfDisposed();
+#if NET8_0_OR_GREATER
+            ArgumentNullException.ThrowIfNull(request);
+#else
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
+#endif
             if (requireAuthentication && !IsAuthorized)
                 throw new InvalidOperationException("The request requires authorization. Call Authorize first.");
 
             var options = new RestClientOptions(Url);
 
             if (requireAuthentication)
-                options.Authenticator = new HttpBasicAuthenticator(_apiKey, _secretKey);
+                options.Authenticator = new HttpBasicAuthenticator(_apiKey!, _secretKey!);
 
             var response = await _transport.ExecuteAsync(request, options, cancellationToken)
                 .ConfigureAwait(false);
@@ -78,9 +85,11 @@ namespace Hitbtc
             {
                 var apiError = TryReadApiError(response.Content);
                 var message = apiError == null
-                    ? string.Format("HitBTC request failed with HTTP status {0} ({1}).",
+                    ? string.Format(CultureInfo.InvariantCulture,
+                        "HitBTC request failed with HTTP status {0} ({1}).",
                         (int)response.StatusCode, response.StatusDescription)
-                    : string.Format("HitBTC request failed: {0}", apiError.Value.Message);
+                    : string.Format(CultureInfo.InvariantCulture, "HitBTC request failed: {0}",
+                        apiError.Value.Message);
                 throw new HitBtcApiException(message, response.StatusCode,
                     apiError?.Code, response.ErrorException);
             }
@@ -93,15 +102,15 @@ namespace Hitbtc
         /// </summary>
         public bool IsAuthorized { get; private set; }
 
-        private static (string Code, string Message)? TryReadApiError(string content)
+        private static (string? Code, string Message)? TryReadApiError(string? content)
         {
-            if (string.IsNullOrWhiteSpace(content)) return null;
+            if (content == null || string.IsNullOrWhiteSpace(content)) return null;
             try
             {
                 var root = JObject.Parse(content);
                 var error = root["error"] as JObject ?? root;
                 var message = error.Value<string>("message") ?? error.Value<string>("description");
-                if (string.IsNullOrWhiteSpace(message)) return null;
+                if (message == null || string.IsNullOrWhiteSpace(message)) return null;
                 return (error.Value<string>("code"), message);
             }
             catch (Newtonsoft.Json.JsonException)
@@ -117,13 +126,35 @@ namespace Hitbtc
         /// <param name="secretKey">Secret key from the Settings page.</param>
         public void Authorize(string apiKey, string secretKey)
         {
+            ThrowIfDisposed();
             if (string.IsNullOrWhiteSpace(apiKey))
                 throw new ArgumentException("API key cannot be empty.", nameof(apiKey));
             if (string.IsNullOrWhiteSpace(secretKey))
                 throw new ArgumentException("Secret key cannot be empty.", nameof(secretKey));
             _apiKey = apiKey;
             _secretKey = secretKey;
+            _transport.ResetAuthenticatedClient();
             IsAuthorized = true;
+        }
+
+        public void Dispose()
+        {
+            if (_disposed) return;
+            _transport.Dispose();
+            _apiKey = null;
+            _secretKey = null;
+            IsAuthorized = false;
+            _disposed = true;
+            GC.SuppressFinalize(this);
+        }
+
+        private void ThrowIfDisposed()
+        {
+#if NET8_0_OR_GREATER
+            ObjectDisposedException.ThrowIf(_disposed, this);
+#else
+            if (_disposed) throw new ObjectDisposedException(nameof(HitBtcRestApi));
+#endif
         }
 
     }

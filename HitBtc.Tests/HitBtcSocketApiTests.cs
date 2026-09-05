@@ -53,7 +53,7 @@ namespace Hitbtc.Tests
             {
                 var response = await api.Execute("{}", false);
                 Assert.Equal("{\"result\":\"سلام\"}", response.Content);
-                Assert.DoesNotContain("\0", response.Content);
+                Assert.Equal(-1, response.Content.IndexOf('\0'));
             }
         }
 
@@ -87,6 +87,125 @@ namespace Hitbtc.Tests
                 Assert.Contains("\"ch\":\"ticker/1s\"", request);
                 Assert.Contains("\"symbols\":[\"BTCUSDT\"]", request);
             }
+        }
+
+        [Fact]
+        public async Task ListenForNotifications_PublicMessage_RaisesTypedEvent()
+        {
+            var socket = new FakeWebSocketClient();
+            socket.EnqueueText("{\"result\":\"ok\",\"id\":7}");
+            socket.EnqueueText("{\"ch\":\"ticker/1s\",\"data\":{\"BTCUSDT\":{\"last\":\"100\"}}}");
+            using (var source = new CancellationTokenSource())
+            using (var api = new HitBtcSocketApi(socket))
+            {
+                HitBtcNotificationEventArgs received = null;
+                api.NotificationReceived += (sender, args) =>
+                {
+                    received = args;
+                    source.Cancel();
+                };
+
+                await api.MarketData.SubscribeTicker("BTCUSDT", 7);
+                await api.ListenForNotificationsAsync(false, source.Token);
+
+                Assert.NotNull(received);
+                Assert.Equal("ticker/1s", received.Channel);
+                Assert.Equal("100", received.Data["BTCUSDT"]["last"].ToObject<string>());
+                Assert.Contains("BTCUSDT", received.RawJson);
+            }
+        }
+
+        [Fact]
+        public async Task ListenForNotifications_MalformedMessage_ThrowsTypedException()
+        {
+            var socket = new FakeWebSocketClient();
+            socket.EnqueueText("not-json");
+            using (var api = new HitBtcSocketApi(socket))
+            using (var source = new CancellationTokenSource(TimeSpan.FromSeconds(5)))
+            {
+                await Assert.ThrowsAsync<HitBtcWebSocketException>(
+                    () => api.ListenForNotificationsAsync(false, source.Token));
+            }
+        }
+
+        [Fact]
+        public async Task ListenForNotifications_AuthenticatedWithoutCredentials_ThrowsBeforeConnecting()
+        {
+            var socket = new FakeWebSocketClient();
+            using (var api = new HitBtcSocketApi(socket))
+            {
+                await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                    api.ListenForNotificationsAsync(true, CancellationToken.None));
+                Assert.Equal(0, socket.ConnectCount);
+            }
+        }
+
+        [Fact]
+        public async Task ListenForNotifications_ServerClose_ReconnectsAndReplaysSubscription()
+        {
+            var socket = new FakeWebSocketClient();
+            socket.EnqueueText("{\"result\":\"ok\",\"id\":7}");
+            socket.EnqueueClose();
+            socket.EnqueueText("{\"result\":\"ok\",\"id\":7}");
+            socket.EnqueueText("{\"ch\":\"ticker/1s\",\"data\":{\"BTCUSDT\":{\"last\":\"101\"}}}");
+            var options = new WebSocketReconnectOptions
+            {
+                MaxAttempts = 2,
+                InitialDelay = TimeSpan.Zero,
+                MaximumDelay = TimeSpan.Zero
+            };
+            using (var source = new CancellationTokenSource(TimeSpan.FromSeconds(5)))
+            using (var api = new HitBtcSocketApi(socket, socket, options))
+            {
+                var reconnects = 0;
+                api.Reconnecting += (sender, args) => reconnects++;
+                api.NotificationReceived += (sender, args) => source.Cancel();
+
+                await api.MarketData.SubscribeTicker("BTCUSDT", 7);
+                await api.ListenForNotificationsAsync(false, source.Token);
+
+                Assert.Equal(1, reconnects);
+                Assert.Equal(2, socket.ConnectCount);
+                Assert.Equal(2, socket.SentMessages.Count(message =>
+                    message.Contains("\"ch\":\"ticker/1s\"")));
+            }
+        }
+
+        [Fact]
+        public async Task ListenForNotifications_ReconnectLimitExceeded_ThrowsTypedException()
+        {
+            var socket = new FakeWebSocketClient();
+            socket.EnqueueClose();
+            socket.EnqueueClose();
+            var options = new WebSocketReconnectOptions
+            {
+                MaxAttempts = 1,
+                InitialDelay = TimeSpan.Zero,
+                MaximumDelay = TimeSpan.Zero
+            };
+            using (var api = new HitBtcSocketApi(socket, socket, options))
+            using (var source = new CancellationTokenSource(TimeSpan.FromSeconds(5)))
+            {
+                var error = await Assert.ThrowsAsync<HitBtcWebSocketException>(() =>
+                    api.ListenForNotificationsAsync(false, source.Token));
+                Assert.Contains("exhausted", error.Message);
+                Assert.Equal(2, socket.ConnectCount);
+            }
+        }
+
+        [Theory]
+        [InlineData(1, 100)]
+        [InlineData(2, 200)]
+        [InlineData(3, 250)]
+        public void ReconnectOptions_Attempt_UsesCappedExponentialDelay(int attempt, int expectedMilliseconds)
+        {
+            var options = new WebSocketReconnectOptions
+            {
+                InitialDelay = TimeSpan.FromMilliseconds(100),
+                MaximumDelay = TimeSpan.FromMilliseconds(250)
+            };
+
+            Assert.Equal(TimeSpan.FromMilliseconds(expectedMilliseconds), options.GetDelay(attempt));
         }
 
         [Fact]
@@ -249,6 +368,7 @@ namespace Hitbtc.Tests
                 Array.Copy(item.Bytes, 0, buffer.Array, buffer.Offset, item.Bytes.Length);
                 return Task.FromResult(new WebSocketReceiveResult(item.Bytes.Length, item.Type, item.End));
             }
+            public void Reset() => State = WebSocketState.None;
             public void Dispose() => State = WebSocketState.Closed;
 
             private sealed class Fragment

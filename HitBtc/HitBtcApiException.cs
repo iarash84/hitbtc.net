@@ -7,7 +7,7 @@ namespace Hitbtc
     public sealed class HitBtcApiException : Exception
     {
         public HitBtcApiException(string message, HttpStatusCode statusCode = 0,
-            string apiErrorCode = null, Exception innerException = null)
+            string? apiErrorCode = null, Exception? innerException = null)
             : base(message, innerException)
         {
             StatusCode = statusCode;
@@ -18,18 +18,18 @@ namespace Hitbtc
         public HttpStatusCode StatusCode { get; }
 
         /// <summary>Gets the exchange-specific error code when the response supplied one.</summary>
-        public string ApiErrorCode { get; }
+        public string? ApiErrorCode { get; }
     }
 
     /// <summary>Represents a malformed or error response received over WebSocket.</summary>
     public sealed class HitBtcWebSocketException : Exception
     {
-        public HitBtcWebSocketException(string message, string apiErrorCode = null,
-            Exception innerException = null) : base(message, innerException)
+        public HitBtcWebSocketException(string message, string? apiErrorCode = null,
+            Exception? innerException = null) : base(message, innerException)
         {
             ApiErrorCode = apiErrorCode;
         }
 
-        public string ApiErrorCode { get; }
+        public string? ApiErrorCode { get; }
     }
 }

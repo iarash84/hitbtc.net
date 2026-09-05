@@ -35,8 +35,10 @@ jobs:
       - name: Stage release DLL files
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Path artifacts/Hitbtc -Force | Out-Null
-          Copy-Item HitBtc/bin/Release/*.dll artifacts/Hitbtc/
+          New-Item -ItemType Directory -Path artifacts/Hitbtc/net48 -Force | Out-Null
+          New-Item -ItemType Directory -Path artifacts/Hitbtc/net8.0 -Force | Out-Null
+          Copy-Item HitBtc/bin/Release/net48/*.dll artifacts/Hitbtc/net48/
+          Copy-Item HitBtc/bin/Release/net8.0/*.dll artifacts/Hitbtc/net8.0/
 
       - name: Upload release DLL artifact
         uses: actions/upload-artifact@v4

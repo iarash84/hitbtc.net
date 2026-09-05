@@ -1,7 +1,7 @@
 # HitBTC.Net
 
 A C# client library for the HitBTC API v3 REST and WebSocket interfaces. The library targets
-.NET Framework 4.8 and provides typed clients for public market data, account
+.NET Framework 4.8 and .NET 8.0 and provides typed clients for public market data, account
 operations, trading, trading history, and JSON-RPC WebSocket operations.
 
 > The client has migrated from the deprecated API v2 contract to API v3. Existing
@@ -14,7 +14,7 @@ operations, trading, trading history, and JSON-RPC WebSocket operations.
 
 | Path | Purpose |
 | --- | --- |
-| `HitBtc/` | The .NET Framework 4.8 class library that produces `Hitbtc.dll` |
+| `HitBtc/` | The multi-targeted `net48`/`net8.0` class library that produces `Hitbtc.dll` |
 | `HitBtc/HitBtcCategories/` | REST and WebSocket API operation groups |
 | `HitBtc/HitBtcModel/` | Request and response models |
 | `HitBtc.Tests/` | Deterministic xUnit tests that do not use the live HitBTC service |
@@ -26,8 +26,8 @@ The `Test` project is a demo application, not the automated test suite. CI uses
 
 ## Requirements
 
-- Windows with the .NET Framework 4.8 Developer Pack
-- Visual Studio 2022, or a compatible .NET SDK and NuGet CLI
+- Windows with the .NET Framework 4.8 Developer Pack for legacy builds
+- .NET 8 SDK or newer and Visual Studio 2022
 - Git, when contributing or creating a release
 
 ## Restore, build, and test
@@ -58,7 +58,8 @@ dotnet test HitBtc.Tests/HitBtc.Tests.csproj `
 The Release library is generated at:
 
 ```text
-HitBtc/bin/Release/Hitbtc.dll
+HitBtc/bin/Release/net48/Hitbtc.dll
+HitBtc/bin/Release/net8.0/Hitbtc.dll
 ```
 
 The DLL depends on the other assemblies copied into the same output directory.
@@ -91,6 +92,11 @@ api.Authorize(apiKey, secretKey);
 var balances = await api.Trading.GetBalance();
 var orders = await api.Trading.GetOrders("BTCUSDT");
 ```
+
+`HitBtcRestApi` implements `IDisposable` and reuses separate public and
+authenticated HTTP clients. Reuse one API instance for related calls and dispose
+it when the application scope ends. Calling `Authorize` with new credentials
+recreates only the authenticated client.
 
 Do not hard-code or commit API credentials. Load them from a secure secret store
 or environment variables. Only grant the API key permissions required by your
@@ -136,9 +142,29 @@ queries. The corresponding legacy methods are retained as obsolete members and
 throw `NotSupportedException` so that migration failures are explicit.
 Malformed messages, exchange errors, and mismatched response IDs throw
 `HitBtcWebSocketException`. The current high-level subscription methods return
-the subscription acknowledgement; applications that need a continuous event
-stream should use the low-level protocol carefully until a notification API is
-added.
+the subscription acknowledgement. After subscribing, attach a
+`NotificationReceived` handler and run `ListenForNotificationsAsync` with a
+cancellation token to consume the continuous stream:
+
+```csharp
+using (var api = new HitBtcSocketApi())
+using (var stop = new CancellationTokenSource())
+{
+    api.NotificationReceived += (sender, notification) =>
+        Console.WriteLine(notification.RawJson);
+
+    await api.MarketData.SubscribeTicker("BTCUSDT");
+    await api.ListenForNotificationsAsync(false, stop.Token);
+}
+```
+
+Commands and the listener are serialized on each connection, so complete all
+subscriptions before starting the long-running listener.
+If the connection closes, the listener reconnects with capped exponential
+backoff and automatically replays successful subscriptions. Configure the policy
+with `WebSocketReconnectOptions`; observe attempts through the `Reconnecting`
+event. Trading commands are never automatically resent because doing so could
+duplicate a financial operation.
 
 ## Migrating from API v2 to API v3
 
@@ -213,14 +239,16 @@ Every push runs `.github/workflows/build-test-release.yml`. A successful run:
 1. restores NuGet dependencies;
 2. builds the solution in Release mode;
 3. runs the automated tests;
-4. uploads `Hitbtc.dll` and its runtime dependencies as a GitHub Actions artifact.
+4. uploads separate `net48` and `net8.0` directories containing `Hitbtc.dll` and
+   the runtime dependencies for each target as a GitHub Actions artifact.
 
 The artifact name contains the commit SHA and is retained for 30 days. Artifacts
 from ordinary pushes are build outputs; they are not permanent GitHub Releases.
 
 ## Creating a new release
 
-Releases use semantic version tags such as `v1.1.0`:
+The current release candidate is `2.1.0`. Releases use matching semantic version
+tags such as `v2.1.0`:
 
 - increment the major version for breaking public API changes;
 - increment the minor version for backward-compatible features;
@@ -239,14 +267,14 @@ Then synchronize `master`, create an annotated tag, and push the tag:
 git switch master
 git pull --ff-only origin master
 
-git tag -a v1.1.0 -m "Release v1.1.0"
-git push origin v1.1.0
+git tag -a v2.1.0 -m "Release v2.1.0"
+git push origin v2.1.0
 ```
 
 Pushing the tag triggers the workflow. After the build and tests pass, it:
 
 1. collects the Release DLL files;
-2. creates `Hitbtc-v1.1.0.zip`;
+2. creates `Hitbtc-v2.1.0.zip` with separate `net48` and `net8.0` directories;
 3. creates the GitHub Release from the tag;
 4. attaches the ZIP file and generated release notes.
 
@@ -274,7 +302,7 @@ provided without warranty.
 
 # HitBTC.Net — راهنمای فارسی
 
-کتابخانه‌ای برای استفاده از رابط‌های REST و WebSocket نسخه ۳ صرافی HitBTC در زبان C# است. این پروژه بر پایهٔ .NET Framework 4.8 ساخته شده و برای دریافت اطلاعات عمومی بازار، مدیریت کیف پول، معاملات اسپات و تاریخچهٔ معاملات، مدل‌ها و کلاینت‌های نوع‌دار ارائه می‌دهد.
+کتابخانه‌ای برای استفاده از رابط‌های REST و WebSocket نسخه ۳ صرافی HitBTC در زبان C# است. این پروژه به‌صورت multi-target برای .NET Framework 4.8 و .NET 8.0 ساخته شده و برای دریافت اطلاعات عمومی بازار، مدیریت کیف پول، معاملات اسپات و تاریخچهٔ معاملات، مدل‌ها و کلاینت‌های نوع‌دار ارائه می‌دهد.
 
 > این کتابخانه رسمی HitBTC نیست. پیش از استفاده از قابلیت‌های معامله یا برداشت روی حساب دارای موجودی، آن‌ها را با دقت بررسی کنید.
 
@@ -282,7 +310,7 @@ provided without warranty.
 
 | مسیر | کاربرد |
 | --- | --- |
-| `HitBtc/` | کتابخانهٔ اصلی که فایل `Hitbtc.dll` را تولید می‌کند |
+| `HitBtc/` | کتابخانهٔ اصلی multi-target برای `net48` و `net8.0` |
 | `HitBtc/HitBtcCategories/` | گروه‌های عملیاتی REST و WebSocket |
 | `HitBtc/HitBtcModel/` | مدل‌های درخواست و پاسخ |
 | `HitBtc.Tests/` | تست‌های خودکار و مستقل از سرویس زنده |
@@ -293,8 +321,8 @@ provided without warranty.
 
 ## پیش‌نیازها
 
-- ویندوز و بستهٔ توسعهٔ .NET Framework 4.8
-- Visual Studio 2022 یا یک نسخهٔ سازگار از .NET SDK و NuGet CLI
+- بستهٔ توسعهٔ .NET Framework 4.8 برای خروجی قدیمی
+- .NET 8 SDK یا جدیدتر و Visual Studio 2022
 - Git برای مشارکت و ساخت نسخهٔ انتشار
 
 ## بازیابی وابستگی‌ها، بیلد و تست
@@ -311,7 +339,7 @@ dotnet test HitBtc.Tests/HitBtc.Tests.csproj --configuration Release --no-build 
 
 <div dir="rtl" align="right">
 
-فایل DLL نسخهٔ Release در مسیر `HitBtc/bin/Release/Hitbtc.dll` ساخته می‌شود. هنگام توزیع دستی، وابستگی‌های موجود در پوشهٔ خروجی را نیز همراه آن منتشر کنید.
+فایل‌های DLL نسخهٔ Release در مسیرهای `HitBtc/bin/Release/net48/Hitbtc.dll` و `HitBtc/bin/Release/net8.0/Hitbtc.dll` ساخته می‌شوند. هنگام توزیع دستی، وابستگی‌های موجود در پوشهٔ خروجی target موردنظر را نیز همراه آن منتشر کنید.
 
 ## استفاده از REST API
 
@@ -345,6 +373,8 @@ var orders = await api.Trading.GetOrders("BTCUSDT");
 
 کلیدها را داخل کد یا مخزن قرار ندهید و فقط دسترسی‌های موردنیاز برنامه را برای آن‌ها فعال کنید.
 
+کلاس `HitBtcRestApi` رابط `IDisposable` را پیاده‌سازی می‌کند و HTTP clientهای عمومی و احراز هویت‌شده را جداگانه reuse می‌کند. یک نمونه را برای درخواست‌های مرتبط نگه دارید و در پایان scope آن را dispose کنید. تغییر credential فقط client خصوصی را بازسازی می‌کند.
+
 خطاهای HTTP و خطاهای API با `HitBtcApiException` گزارش می‌شوند. این exception در صورت موجود بودن، وضعیت HTTP و کد خطای صرافی را نیز ارائه می‌دهد و پاسخ نامعتبر را به مدل خالی تبدیل نمی‌کند.
 
 ## استفاده از WebSocket
@@ -362,7 +392,9 @@ using (var api = new HitBtcSocketApi())
 
 نسخهٔ ۳ از اتصال‌های جداگانه برای داده‌های عمومی و عملیات معاملاتی استفاده می‌کند. درخواست‌های یک‌بارهٔ ارزها، نمادها و تاریخچهٔ معاملات دیگر از طریق WebSocket ارائه نمی‌شوند و باید از `HitBtcRestApi.PublicData` یا `HitBtcRestApi.TradingHistory` استفاده شود.
 
-پاسخ JSON نامعتبر، خطای سرور یا شناسهٔ نامنطبق با `HitBtcWebSocketException` گزارش می‌شود. متدهای فعلی اشتراک فقط تأیید اشتراک را برمی‌گردانند و هنوز API سطح‌بالایی برای دریافت پیوستهٔ notificationها ارائه نشده است.
+پاسخ JSON نامعتبر، خطای سرور یا شناسهٔ نامنطبق با `HitBtcWebSocketException` گزارش می‌شود. پس از دریافت تأیید اشتراک، با event به نام `NotificationReceived` و متد `ListenForNotificationsAsync` می‌توان notificationها را تا زمان لغو شدن `CancellationToken` به‌صورت پیوسته دریافت کرد. تمام subscriptionها را پیش از شروع listener اجرا کنید، زیرا commandها و دریافت پیوسته روی هر اتصال به‌صورت سریال اجرا می‌شوند.
+
+در صورت قطع اتصال، listener با exponential backoff محدودشده دوباره متصل می‌شود و subscriptionهای موفق را تکرار می‌کند. تنظیمات از طریق `WebSocketReconnectOptions` و رویداد تلاش‌ها از طریق `Reconnecting` در دسترس است. commandهای معاملاتی هرگز خودکار تکرار نمی‌شوند تا عملیات مالی تکراری ایجاد نشود.
 
 ## تفاوت نسخهٔ ۲ و ۳
 
@@ -397,7 +429,7 @@ dotnet run --project Test/Test.csproj
 
 ## روند توسعه و انتشار
 
-شاخهٔ `master` محافظت‌شده است. تغییرات را در یک شاخهٔ feature انجام دهید، تست‌ها را اجرا کنید و سپس Pull Request بسازید. برای انتشار نسخهٔ جدید، پس از ادغام تغییرات و موفقیت CI یک تگ معنایی مانند `v1.1.0` ایجاد و push کنید. workflow فایل Release را می‌سازد و ZIP خروجی را به GitHub Release متصل می‌کند.
+شاخهٔ `master` محافظت‌شده است. تغییرات را در یک شاخهٔ feature انجام دهید، تست‌ها را اجرا کنید و سپس Pull Request بسازید. نسخهٔ آمادهٔ انتشار فعلی `2.1.0` است. پس از ادغام تغییرات و موفقیت CI تگ `v2.1.0` را ایجاد و push کنید. workflow خروجی‌های جداگانهٔ `net48` و `net8.0` را در ZIP قرار می‌دهد و آن را به GitHub Release متصل می‌کند.
 
 ## مشارکت و امنیت
 

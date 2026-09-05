@@ -18,7 +18,7 @@ namespace Hitbtc.HitBtcCategories
             return await _api.Execute(new RestRequest("/api/3/wallet/balance"));
         }
 
-        public async Task<AddressModel> GetAddress(string currency)
+        public async Task<AddressModel?> GetAddress(string currency)
         {
             var request = new RestRequest("/api/3/wallet/crypto/address");
             request.AddQueryParameter("currency", currency);
@@ -36,7 +36,7 @@ namespace Hitbtc.HitBtcCategories
 
         [System.Obsolete("Use PostWithdraw. API v3 does not accept networkFee.")]
         public Task<IdObject> PostWithraw(string currency, int amount, string address,
-            string paymentId = null, string networkFee = null, bool includeFee = false,
+            string? paymentId = null, string? networkFee = null, bool includeFee = false,
             bool autoCommit = true)
         {
             if (!string.IsNullOrWhiteSpace(networkFee))
@@ -47,7 +47,7 @@ namespace Hitbtc.HitBtcCategories
 
         /// <summary>Creates a v3 crypto withdrawal. The amount is a decimal string.</summary>
         public async Task<IdObject> PostWithdraw(string currency, string amount, string address,
-            string paymentId = null, string networkCode = null, bool includeFee = false,
+            string? paymentId = null, string? networkCode = null, bool includeFee = false,
             bool autoCommit = true)
         {
             var request = new RestRequest("/api/3/wallet/crypto/withdraw", Method.Post);
@@ -101,8 +101,8 @@ namespace Hitbtc.HitBtcCategories
             return await _api.Execute(new RestRequest("/api/3/wallet/transactions"));
         }
 
-        public async Task<List<Transaction>> GetTransaction(string transactionId, string currency,
-            string from, string till, int offset, int limit = 100,
+        public async Task<List<Transaction>> GetTransaction(string transactionId, string? currency,
+            string? from, string? till, int offset, int limit = 100,
             PublicEnum.EnSort sort = PublicEnum.EnSort.Desc,
             PublicEnum.EnBy by = PublicEnum.EnBy.timestamp)
         {
@@ -128,7 +128,7 @@ namespace Hitbtc.HitBtcCategories
             return request;
         }
 
-        private static void AddOptional(RestRequest request, string name, string value)
+        private static void AddOptional(RestRequest request, string name, string? value)
         {
             if (!string.IsNullOrWhiteSpace(value)) request.AddParameter(name, value);
         }

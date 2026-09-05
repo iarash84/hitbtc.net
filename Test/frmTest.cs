@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Threading;
 using System.Windows.Forms;
 using Hitbtc;
 using Hitbtc.HitBtcModel;
@@ -16,6 +17,8 @@ namespace Test
     {
         private const string ApiKeyVariable = "HITBTC_API_KEY";
         private const string SecretKeyVariable = "HITBTC_SECRET_KEY";
+        private readonly HitBtcRestApi _restApi = new HitBtcRestApi();
+        private readonly CancellationTokenSource _formLifetime = new CancellationTokenSource();
 
         public frmTest()
         {
@@ -35,60 +38,78 @@ namespace Test
 
         private async void btnTicker_Click(object sender, EventArgs e)
         {
-            await RunOperation("Get ticker", (Button)sender,
-                async () => await new HitBtcRestApi().PublicData.GetTicker(Symbol));
+            await RunOperation("Get ticker", (Button)sender, async () =>
+            {
+                return await _restApi.PublicData.GetTicker(Symbol);
+            });
         }
 
         private async void btnSymbols_Click(object sender, EventArgs e)
         {
-            await RunOperation("Get symbols", (Button)sender,
-                async () => await new HitBtcRestApi().PublicData.GetSymbol());
+            await RunOperation("Get symbols", (Button)sender, async () =>
+            {
+                return await _restApi.PublicData.GetSymbol();
+            });
         }
 
         private async void btnCurrencies_Click(object sender, EventArgs e)
         {
-            await RunOperation("Get currencies", (Button)sender,
-                async () => await new HitBtcRestApi().PublicData.GetCurrency());
+            await RunOperation("Get currencies", (Button)sender, async () =>
+            {
+                return await _restApi.PublicData.GetCurrency();
+            });
         }
 
         private async void btnOrderBook_Click(object sender, EventArgs e)
         {
             await RunOperation("Get order book", (Button)sender, async () =>
             {
-                var orderbook = await new HitBtcRestApi().PublicData.GetOrderbook(Symbol, 25);
-                return ToOrderBookRows(orderbook);
+                return ToOrderBookRows(await _restApi.PublicData.GetOrderbook(Symbol, 25));
             });
         }
 
         private async void btnCandles_Click(object sender, EventArgs e)
         {
-            await RunOperation("Get M30 candles", (Button)sender,
-                async () => await new HitBtcRestApi().PublicData.GetCandles(Symbol, PublicEnum.EnPeriod.M30));
+            await RunOperation("Get M30 candles", (Button)sender, async () =>
+            {
+                return await _restApi.PublicData.GetCandles(Symbol, PublicEnum.EnPeriod.M30);
+            });
         }
 
         private async void btnSpotBalance_Click(object sender, EventArgs e)
         {
-            await RunOperation("Get spot balance", (Button)sender,
-                async () => await CreateAuthorizedRestClient().Trading.GetBalance());
+            await RunOperation("Get spot balance", (Button)sender, async () =>
+            {
+                AuthorizeRestClient();
+                return await _restApi.Trading.GetBalance();
+            });
         }
 
         private async void btnActiveOrders_Click(object sender, EventArgs e)
         {
-            await RunOperation("Get active orders", (Button)sender,
-                async () => await CreateAuthorizedRestClient().Trading.GetOrders(Symbol));
+            await RunOperation("Get active orders", (Button)sender, async () =>
+            {
+                AuthorizeRestClient();
+                return await _restApi.Trading.GetOrders(Symbol);
+            });
         }
 
         private async void btnTradingHistory_Click(object sender, EventArgs e)
         {
-            await RunOperation("Get trade history", (Button)sender,
-                async () => await CreateAuthorizedRestClient().TradingHistory
-                    .GetTraders(Symbol, null, null, 0, 100));
+            await RunOperation("Get trade history", (Button)sender, async () =>
+            {
+                AuthorizeRestClient();
+                return await _restApi.TradingHistory.GetTraders(Symbol, null, null, 0, 100);
+            });
         }
 
         private async void btnWalletBalance_Click(object sender, EventArgs e)
         {
-            await RunOperation("Get wallet balance", (Button)sender,
-                async () => await CreateAuthorizedRestClient().Account.GetBalance());
+            await RunOperation("Get wallet balance", (Button)sender, async () =>
+            {
+                AuthorizeRestClient();
+                return await _restApi.Account.GetBalance();
+            });
         }
 
         private async void btnSubscribeTicker_Click(object sender, EventArgs e)
@@ -96,10 +117,41 @@ namespace Test
             await RunOperation("Subscribe ticker WebSocket", (Button)sender, async () =>
             {
                 using (var api = new HitBtcSocketApi())
+                using (var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10)))
+                using (var stop = CancellationTokenSource.CreateLinkedTokenSource(
+                    timeout.Token, _formLifetime.Token))
                 {
+                    var notifications = new List<NotificationRow>();
+                    var notificationLock = new object();
+                    api.Reconnecting += (reconnectSender, reconnect) => BeginInvoke(new Action(() =>
+                        WriteLog(LogLevel.Info, string.Format(
+                            "WebSocket disconnected; reconnect attempt {0} starts in {1:N0} ms.",
+                            reconnect.Attempt, reconnect.Delay.TotalMilliseconds))));
+                    api.NotificationReceived += (notificationSender, notification) =>
+                    {
+                        List<NotificationRow> snapshot;
+                        lock (notificationLock)
+                        {
+                            notifications.Add(new NotificationRow(notification.Channel,
+                                notification.Method, notification.RawJson));
+                            snapshot = notifications.ToList();
+                        }
+                        BeginInvoke(new Action(() =>
+                        {
+                            BindResult(snapshot);
+                            WriteLog(LogLevel.Success, "WebSocket notification received from " +
+                                (notification.Channel ?? notification.Method ?? "unknown channel") + ".");
+                        }));
+                    };
                     var acknowledgement = await api.MarketData.SubscribeTicker(Symbol);
-                    WriteLog(LogLevel.Info, "Subscription acknowledgement received; this console does not keep a streaming listener open.");
-                    return acknowledgement;
+                    WriteLog(LogLevel.Info, "Subscription acknowledged. Listening for notifications for 10 seconds.");
+                    await api.ListenForNotificationsAsync(false, stop.Token);
+                    lock (notificationLock)
+                    {
+                        return notifications.Count == 0
+                            ? (object)new[] { acknowledgement }
+                            : notifications.ToList();
+                    }
                 }
             });
         }
@@ -182,12 +234,18 @@ namespace Test
             return rows;
         }
 
-        private HitBtcRestApi CreateAuthorizedRestClient()
+        private void AuthorizeRestClient()
         {
             EnsureCredentials();
-            var api = new HitBtcRestApi();
-            api.Authorize(txtApiKey.Text.Trim(), txtSecret.Text);
-            return api;
+            _restApi.Authorize(txtApiKey.Text.Trim(), txtSecret.Text);
+        }
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            _formLifetime.Cancel();
+            _restApi.Dispose();
+            _formLifetime.Dispose();
+            base.OnFormClosed(e);
         }
 
         private HitBtcSocketApi CreateAuthorizedSocketClient()
@@ -339,6 +397,22 @@ namespace Test
             public string Price { get; }
             public string Size { get; }
             public string Timestamp { get; }
+        }
+
+        private sealed class NotificationRow
+        {
+            public NotificationRow(string channel, string method, string rawJson)
+            {
+                ReceivedAt = DateTime.Now;
+                Channel = channel;
+                Method = method;
+                RawJson = rawJson;
+            }
+
+            public DateTime ReceivedAt { get; }
+            public string Channel { get; }
+            public string Method { get; }
+            public string RawJson { get; }
         }
     }
 }

@@ -52,8 +52,12 @@ namespace Hitbtc
 
         private static void EnsureResponseContent(ApiResponse response)
         {
+#if NET8_0_OR_GREATER
+            ArgumentNullException.ThrowIfNull(response);
+#else
             if (response == null)
                 throw new ArgumentNullException(nameof(response));
+#endif
             if (string.IsNullOrWhiteSpace(response.Content))
                 throw new JsonSerializationException("The API response body was empty.");
         }
